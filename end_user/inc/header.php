@@ -46,6 +46,7 @@
                                 <li class="megamenu-container active"><a href="?" class="sf-with-ul">Home</a></li>
                                 <li><a href="?mod=product&act=main&cat_id=1" class="sf-with-ul">Mobile</a>
                                 <li><a href="?mod=product&act=main&cat_id=2" class="sf-with-ul">Macbook</a>
+                                
                                 </li>
                             </ul><!-- End .menu -->
                         </nav><!-- End .main-nav -->
