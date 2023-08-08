@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 02, 2023 at 09:14 PM
+-- Generation Time: Aug 08, 2023 at 07:59 PM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 8.1.10
 
@@ -98,7 +98,8 @@ CREATE TABLE `carts` (
   `Id` int(11) NOT NULL,
   `ProductId` int(11) NOT NULL,
   `UserId` int(11) NOT NULL,
-  `IsChoice` tinyint(1) NOT NULL
+  `IsChoice` tinyint(1) NOT NULL,
+  `Quantity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -124,7 +125,8 @@ CREATE TABLE `categories` (
 CREATE TABLE `orderproducts` (
   `Id` int(11) NOT NULL,
   `ProductId` int(11) NOT NULL,
-  `OrderId` int(11) NOT NULL
+  `OrderId` int(11) NOT NULL,
+  `Quantity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -135,7 +137,6 @@ CREATE TABLE `orderproducts` (
 
 CREATE TABLE `orders` (
   `Id` int(11) NOT NULL,
-  `ProductId` int(11) NOT NULL,
   `UserId` int(11) NOT NULL,
   `Status` int(11) NOT NULL,
   `Address` varchar(255) NOT NULL,
@@ -143,7 +144,8 @@ CREATE TABLE `orders` (
   `TotalPayment` double DEFAULT NULL,
   `TotalPrice` double DEFAULT NULL,
   `ShippingFee` double DEFAULT NULL,
-  `CreatedDate` timestamp NOT NULL DEFAULT current_timestamp()
+  `CreatedDate` timestamp NOT NULL DEFAULT current_timestamp(),
+  `Fullname` varchar(150) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -172,19 +174,6 @@ CREATE TABLE `productlabels` (
   `Id` int(11) NOT NULL,
   `ProductId` int(11) NOT NULL,
   `Type` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `productproperties`
---
-
-CREATE TABLE `productproperties` (
-  `Id` int(11) NOT NULL,
-  `ProductId` int(11) NOT NULL,
-  `Type` int(11) NOT NULL,
-  `Value` char(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -227,14 +216,25 @@ INSERT INTO `roles` (`Id`, `Name`, `NormalizedName`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `specificationproducts`
+--
+
+CREATE TABLE `specificationproducts` (
+  `Id` int(11) NOT NULL,
+  `SpecificationId` int(11) NOT NULL,
+  `ProductId` int(11) NOT NULL,
+  `Value` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `specifications`
 --
 
 CREATE TABLE `specifications` (
   `Id` int(11) NOT NULL,
-  `ProductId` int(11) NOT NULL,
-  `Value` varchar(255) NOT NULL,
-  `Type` int(11) NOT NULL
+  `Title` varchar(150) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -314,8 +314,7 @@ ALTER TABLE `orderproducts`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`Id`),
-  ADD KEY `ProductId` (`ProductId`),
-  ADD KEY `UserId` (`UserId`);
+  ADD KEY `orders_ibfk_1` (`UserId`);
 
 --
 -- Indexes for table `productcomments`
@@ -333,13 +332,6 @@ ALTER TABLE `productlabels`
   ADD KEY `ProductId` (`ProductId`);
 
 --
--- Indexes for table `productproperties`
---
-ALTER TABLE `productproperties`
-  ADD PRIMARY KEY (`Id`),
-  ADD KEY `ProductId` (`ProductId`);
-
---
 -- Indexes for table `products`
 --
 ALTER TABLE `products`
@@ -353,11 +345,18 @@ ALTER TABLE `roles`
   ADD PRIMARY KEY (`Id`);
 
 --
+-- Indexes for table `specificationproducts`
+--
+ALTER TABLE `specificationproducts`
+  ADD PRIMARY KEY (`Id`),
+  ADD KEY `SpecificationId` (`SpecificationId`),
+  ADD KEY `ProductId` (`ProductId`);
+
+--
 -- Indexes for table `specifications`
 --
 ALTER TABLE `specifications`
-  ADD PRIMARY KEY (`Id`),
-  ADD KEY `ProductId` (`ProductId`);
+  ADD PRIMARY KEY (`Id`);
 
 --
 -- Indexes for table `users`
@@ -419,12 +418,6 @@ ALTER TABLE `productlabels`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `productproperties`
---
-ALTER TABLE `productproperties`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
@@ -435,6 +428,12 @@ ALTER TABLE `products`
 --
 ALTER TABLE `roles`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `specificationproducts`
+--
+ALTER TABLE `specificationproducts`
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `specifications`
@@ -483,8 +482,7 @@ ALTER TABLE `orderproducts`
 -- Constraints for table `orders`
 --
 ALTER TABLE `orders`
-  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`ProductId`) REFERENCES `products` (`Id`),
-  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`UserId`) REFERENCES `users` (`Id`);
+  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `users` (`Id`);
 
 --
 -- Constraints for table `productcomments`
@@ -500,22 +498,17 @@ ALTER TABLE `productlabels`
   ADD CONSTRAINT `productlabels_ibfk_1` FOREIGN KEY (`ProductId`) REFERENCES `products` (`Id`);
 
 --
--- Constraints for table `productproperties`
---
-ALTER TABLE `productproperties`
-  ADD CONSTRAINT `productproperties_ibfk_1` FOREIGN KEY (`ProductId`) REFERENCES `products` (`Id`);
-
---
 -- Constraints for table `products`
 --
 ALTER TABLE `products`
   ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`CategoryId`) REFERENCES `categories` (`Id`);
 
 --
--- Constraints for table `specifications`
+-- Constraints for table `specificationproducts`
 --
-ALTER TABLE `specifications`
-  ADD CONSTRAINT `specifications_ibfk_1` FOREIGN KEY (`ProductId`) REFERENCES `products` (`Id`);
+ALTER TABLE `specificationproducts`
+  ADD CONSTRAINT `specificationproducts_ibfk_1` FOREIGN KEY (`SpecificationId`) REFERENCES `specifications` (`Id`),
+  ADD CONSTRAINT `specificationproducts_ibfk_2` FOREIGN KEY (`ProductId`) REFERENCES `products` (`Id`);
 
 --
 -- Constraints for table `users`
