@@ -2,8 +2,8 @@
 -- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Aug 08, 2023 at 07:59 PM
+-- Host: localhost
+-- Generation Time: Aug 09, 2023 at 12:09 PM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 8.1.10
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `ecommerce`
+-- Database: `ecommerce_v1`
 --
 
 DELIMITER $$
@@ -43,50 +43,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `RegisterDefault` (`p_username` CHAR
 END$$
 
 DELIMITER ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `accountroles`
---
-
-CREATE TABLE `accountroles` (
-  `Id` int(11) NOT NULL,
-  `AccountId` int(11) NOT NULL,
-  `RoleId` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `accountroles`
---
-
-INSERT INTO `accountroles` (`Id`, `AccountId`, `RoleId`) VALUES
-(1, 1, 1),
-(2, 2, 2);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `accounts`
---
-
-CREATE TABLE `accounts` (
-  `Id` int(11) NOT NULL,
-  `Username` char(50) NOT NULL,
-  `Email` char(100) NOT NULL,
-  `PhoneNumber` int(11) NOT NULL,
-  `Password` char(50) NOT NULL,
-  `CreatedDate` timestamp NOT NULL DEFAULT current_timestamp(),
-  `LastModifiedDate` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `accounts`
---
-
-INSERT INTO `accounts` (`Id`, `Username`, `Email`, `PhoneNumber`, `Password`, `CreatedDate`, `LastModifiedDate`) VALUES
-(1, 'admin', 'admin@gmail.com', 999000001, 'sPKZoFiMuz', '2023-08-02 18:50:18', '2023-08-03 01:50:18'),
-(2, 'employeeA', 'employeeA@gmail.com', 999000002, 'QxfhhY6d2i', '2023-08-02 18:50:18', '2023-08-03 01:50:18');
 
 -- --------------------------------------------------------
 
@@ -221,9 +177,9 @@ INSERT INTO `roles` (`Id`, `Name`, `NormalizedName`) VALUES
 
 CREATE TABLE `specificationproducts` (
   `Id` int(11) NOT NULL,
-  `SpecificationId` int(11) NOT NULL,
   `ProductId` int(11) NOT NULL,
-  `Value` varchar(255) DEFAULT NULL
+  `SpecificationId` int(11) NOT NULL,
+  `Value` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -240,12 +196,31 @@ CREATE TABLE `specifications` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `userroles`
+--
+
+CREATE TABLE `userroles` (
+  `Id` int(11) NOT NULL,
+  `UserId` int(11) NOT NULL,
+  `RoleId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `userroles`
+--
+
+INSERT INTO `userroles` (`Id`, `UserId`, `RoleId`) VALUES
+(1, 1, 1),
+(2, 2, 2);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
   `Id` int(11) NOT NULL,
-  `AccountId` int(11) NOT NULL,
   `Username` char(50) NOT NULL,
   `Fullname` varchar(150) NOT NULL,
   `Email` char(100) NOT NULL,
@@ -257,34 +232,21 @@ CREATE TABLE `users` (
   `Gender` int(11) NOT NULL,
   `DOB` date DEFAULT NULL,
   `CreatedDate` timestamp NOT NULL DEFAULT current_timestamp(),
-  `LastModifiedDate` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `LastModifiedDate` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `Password` char(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`Id`, `AccountId`, `Username`, `Fullname`, `Email`, `PhoneNumber`, `Address`, `Avatar`, `Cover`, `Bio`, `Gender`, `DOB`, `CreatedDate`, `LastModifiedDate`) VALUES
-(1, 1, 'admin', 'admin', 'admin@gmail.com', 999000001, NULL, NULL, NULL, NULL, 0, '1981-08-13', '2023-08-02 18:54:25', '2023-08-03 01:54:25'),
-(2, 2, 'employeeA', 'employeeA', 'employeeA@gmail.com', 999000002, NULL, NULL, NULL, NULL, 0, '1992-08-17', '2023-08-02 18:54:25', '2023-08-03 01:54:25');
+INSERT INTO `users` (`Id`, `Username`, `Fullname`, `Email`, `PhoneNumber`, `Address`, `Avatar`, `Cover`, `Bio`, `Gender`, `DOB`, `CreatedDate`, `LastModifiedDate`, `Password`) VALUES
+(1, 'admin', 'admin', 'admin@gmail.com', 999000001, NULL, NULL, NULL, NULL, 0, '1981-08-13', '2023-08-02 18:54:25', '2023-08-03 01:54:25', ''),
+(2, 'employeeA', 'employeeA', 'employeeA@gmail.com', 999000002, NULL, NULL, NULL, NULL, 0, '1992-08-17', '2023-08-02 18:54:25', '2023-08-03 01:54:25', '');
 
 --
 -- Indexes for dumped tables
 --
-
---
--- Indexes for table `accountroles`
---
-ALTER TABLE `accountroles`
-  ADD PRIMARY KEY (`Id`),
-  ADD KEY `AccountId` (`AccountId`),
-  ADD KEY `RoleId` (`RoleId`);
-
---
--- Indexes for table `accounts`
---
-ALTER TABLE `accounts`
-  ADD PRIMARY KEY (`Id`);
 
 --
 -- Indexes for table `carts`
@@ -314,7 +276,7 @@ ALTER TABLE `orderproducts`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`Id`),
-  ADD KEY `orders_ibfk_1` (`UserId`);
+  ADD KEY `UserId` (`UserId`);
 
 --
 -- Indexes for table `productcomments`
@@ -349,8 +311,8 @@ ALTER TABLE `roles`
 --
 ALTER TABLE `specificationproducts`
   ADD PRIMARY KEY (`Id`),
-  ADD KEY `SpecificationId` (`SpecificationId`),
-  ADD KEY `ProductId` (`ProductId`);
+  ADD KEY `ProductId` (`ProductId`),
+  ADD KEY `SpecificationId` (`SpecificationId`);
 
 --
 -- Indexes for table `specifications`
@@ -359,27 +321,22 @@ ALTER TABLE `specifications`
   ADD PRIMARY KEY (`Id`);
 
 --
+-- Indexes for table `userroles`
+--
+ALTER TABLE `userroles`
+  ADD PRIMARY KEY (`Id`),
+  ADD KEY `RoleId` (`RoleId`),
+  ADD KEY `UserId` (`UserId`) USING BTREE;
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`Id`),
-  ADD KEY `AccountId` (`AccountId`);
+  ADD PRIMARY KEY (`Id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
 --
-
---
--- AUTO_INCREMENT for table `accountroles`
---
-ALTER TABLE `accountroles`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `accounts`
---
-ALTER TABLE `accounts`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `carts`
@@ -442,6 +399,12 @@ ALTER TABLE `specifications`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `userroles`
+--
+ALTER TABLE `userroles`
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
@@ -450,13 +413,6 @@ ALTER TABLE `users`
 --
 -- Constraints for dumped tables
 --
-
---
--- Constraints for table `accountroles`
---
-ALTER TABLE `accountroles`
-  ADD CONSTRAINT `accountroles_ibfk_1` FOREIGN KEY (`AccountId`) REFERENCES `accounts` (`Id`),
-  ADD CONSTRAINT `accountroles_ibfk_2` FOREIGN KEY (`RoleId`) REFERENCES `roles` (`Id`);
 
 --
 -- Constraints for table `carts`
@@ -482,7 +438,7 @@ ALTER TABLE `orderproducts`
 -- Constraints for table `orders`
 --
 ALTER TABLE `orders`
-  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `users` (`Id`);
+  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`UserId`) REFERENCES `users` (`Id`);
 
 --
 -- Constraints for table `productcomments`
@@ -507,14 +463,15 @@ ALTER TABLE `products`
 -- Constraints for table `specificationproducts`
 --
 ALTER TABLE `specificationproducts`
-  ADD CONSTRAINT `specificationproducts_ibfk_1` FOREIGN KEY (`SpecificationId`) REFERENCES `specifications` (`Id`),
-  ADD CONSTRAINT `specificationproducts_ibfk_2` FOREIGN KEY (`ProductId`) REFERENCES `products` (`Id`);
+  ADD CONSTRAINT `specificationproducts_ibfk_1` FOREIGN KEY (`ProductId`) REFERENCES `products` (`Id`),
+  ADD CONSTRAINT `specificationproducts_ibfk_2` FOREIGN KEY (`SpecificationId`) REFERENCES `specifications` (`Id`);
 
 --
--- Constraints for table `users`
+-- Constraints for table `userroles`
 --
-ALTER TABLE `users`
-  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`AccountId`) REFERENCES `accounts` (`Id`);
+ALTER TABLE `userroles`
+  ADD CONSTRAINT `userroles_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `users` (`Id`),
+  ADD CONSTRAINT `userroles_ibfk_2` FOREIGN KEY (`RoleId`) REFERENCES `roles` (`Id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
