@@ -20,6 +20,7 @@ trait QueryBuilder{
         }else{
             $this->operator = ' AND ';
         }
+        
         $this->where.="$this->operator $field $compare '$value'";
 
         return $this;
@@ -53,8 +54,8 @@ trait QueryBuilder{
         return $this;
     }
 
-    public function limit($number, $offset=0){
-        $this->limit = "LIMIT $offset, $number";
+    public function limit($offset, $number){
+        $this->limit = " LIMIT $offset , $number ";
         return $this;
     }
 
@@ -62,13 +63,14 @@ trait QueryBuilder{
     $this->db->orderBy('id', 'DESC')
     $this->db->orderBy('id ASC, name DESC');
     */
-    public function orderBy($field, $type='ASC'){
+
+    public function orderBy($field, $type){
         $fieldArr = array_filter(explode(',', $field));
         if (!empty($fieldArr) && count($fieldArr)>=2){
             //SQL order by multi
-            $this->orderBy = "ORDER BY ".implode(', ', $fieldArr);
+            $this->orderBy = " ORDER BY ".implode(', ', $fieldArr);
         }else{
-            $this->orderBy = "ORDER BY ".$field." ".$type;
+            $this->orderBy = " ORDER BY ".$field." ".$type." ";
         }
 
         return $this;
