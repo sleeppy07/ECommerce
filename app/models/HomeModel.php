@@ -6,7 +6,7 @@
 class HomeModel extends Model {
 
     function tableFill(){
-       return 'province';
+       return 'users';
     }
 
     function fieldFill(){
@@ -14,7 +14,7 @@ class HomeModel extends Model {
     }
 
     function primaryKey(){
-        return 'id';
+        return 'Id';
     }
 
     public function getDetail($id){
@@ -36,7 +36,7 @@ class HomeModel extends Model {
     }
 
     public function getDetailProvince($name){
-        $data = $this->db->table('province')->where('_name', '=', $name)->first();
+        $data = $this->db->table('users')->where('Id', '=', $name)->first();
         return $data;
     }
 
