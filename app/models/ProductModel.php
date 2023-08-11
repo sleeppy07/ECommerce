@@ -15,7 +15,7 @@ class ProductModel extends Model{
      public function CreateProduct($CategoryId, $Name, $Description, $Price, $Discount)
      {
         $tableName = $this->tableFill();
-        $check = $this->db->table($tableName)->orWhere('Name', '=', $Name)->first();
+        $check = $this->db->table($tableName)->Where('Name', '=', $Name)->first();
         if($check != null)
         {
             echo "Product existed";

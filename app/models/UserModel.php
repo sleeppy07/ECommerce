@@ -22,7 +22,7 @@ class UserModel extends Model {
         $tableName = $this->tableFill();
         $check = $this->db->table($tableName)->orWhere('Username', '=', $Username)->orWhere('Email', '=', $Email)->orWhere('PhoneNumber', '=', $PhoneNumber)->first();
         if($check != NULL){
-            echo "User đã tồn tại";
+            echo "User existed";
             return; 
         } 
         $Fullname = $Username;
@@ -51,7 +51,7 @@ class UserModel extends Model {
         $tableName = $this->tableFill();
         $check = $this->db->table($tableName)->where('Id' , '=' , $Id)->first();
         if($check == NULL){
-            echo "User không tồn tại";
+            echo "User not existed";
             return; 
         } 
         $data = [

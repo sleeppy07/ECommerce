@@ -34,7 +34,7 @@ class RoleModel extends Model {
         $check = $this->db->table('userroles')->where('UserId', '=', $UserId)->where('RoleId', '=', $RoleId)->first();
         if($check != null)
         {
-            echo "User đã có role này";
+            echo "User have this Role";
             return;
         }
         $data = [
@@ -50,13 +50,13 @@ class RoleModel extends Model {
         $check = $this->db->table('userroles')->where('UserId', '=', $UserId)->where('RoleId', '=', $RoleId)->first();
         if($check == null)
         {
-            echo "User không có role này";
+            echo "User not have this Role";
             return;
         }
         $result = $this->db->table('userroles')->where('UserId', '=', $UserId)->where('RoleId', '=', $RoleId)->delete();
         
-        if($result) echo 'Xóa thành công.';
-        else echo 'Xóa thất bại.';
+        if($result) echo 'Detele Successful.';
+        else echo 'Delete Fail.';
      }
 
      public function ListUserRole($Username, $Fullname, $Email, $PhoneNumber, $Role, $Page, $PageSize)

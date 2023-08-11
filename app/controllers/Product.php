@@ -47,4 +47,14 @@ class Product extends Controller {
         //Render view
         $this->render('layouts/client_layout', $this->data);
     }
+
+    public function DetailProduct($Id)
+    {
+        $request = $this->productModel->DetailProduct($Id);
+        $this->data['sub_content']['detail_products'] = $request;
+        //$this->data['content'] = 'products/list';
+
+        //Render view
+        $this->render('layouts/client_layout', $this->data);
+    }
 }
