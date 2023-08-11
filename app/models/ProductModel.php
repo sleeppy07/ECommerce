@@ -65,9 +65,19 @@ class ProductModel extends Model{
         if($result) echo 'Detele Successful.';
         else echo 'Delete Fail.';
      }
-     public function ListProduct()
+     public function ListProduct($CategoryId, $Name, $Page, $PageSize)
      {
-        
+        $tableName = $this->tableFill();
+        $data = $this->db->table($tableName);
+        if (!empty($CategoryId)){
+            $data = $data->where('CategoryId', ' = ', $CategoryId);
+        }
+        if (!empty($Name)){
+            $data = $data->whereLike('Name', $Name);
+        }
+        $data = $data->limit($Page, $PageSize);
+        return $data->get();
+
      }
      public function DetailProduct($Id)
      {

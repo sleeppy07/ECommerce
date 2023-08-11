@@ -37,4 +37,14 @@ class Product extends Controller {
         //Render view
         $this->render('layouts/client_layout', $this->data);
     }
+    
+    public function ListProduct($CategoryId, $Name, $Page, $PageSize)
+    {
+        $request = $this->productModel->ListProduct($CategoryId, $Name, $Page, $PageSize);
+        $this->data['sub_content']['list_products'] = $request;
+        //$this->data['content'] = 'products/list';
+
+        //Render view
+        $this->render('layouts/client_layout', $this->data);
+    }
 }

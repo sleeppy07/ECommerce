@@ -8,7 +8,7 @@ class Users extends Controller{
         $this->userModel = $this->model('UserModel');
     }
     
-    public function list($username = null, $email = null, $phoneNumber = null, $startDate = null, $endDate = null, $page = 0, $pageSize = 3){
+    public function UserList($username = null, $email = null, $phoneNumber = null, $startDate = null, $endDate = null, $page = 0, $pageSize = 3){
 
         $request = $this->userModel->UserList($username, $email, $phoneNumber, $startDate, $endDate, $page, $pageSize);
         $this->data['sub_content']['new_title'] = 'Tin tức 1';
@@ -18,7 +18,7 @@ class Users extends Controller{
         $this->render('layouts/client_layout', $this->data);
     }
 
-    public function detail($Id)
+    public function UserDetail($Id)
     {   
         $request = $this->userModel->UserDetail($Id);
         $this->data['sub_content']['users'] = $request;
