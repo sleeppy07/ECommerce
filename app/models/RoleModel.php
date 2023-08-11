@@ -14,7 +14,6 @@ class RoleModel extends Model {
      }
 
      //Roles
-
      public function ListRole()
      {
         $tableName = $this->tableFill();
@@ -23,7 +22,6 @@ class RoleModel extends Model {
      }
 
      //UserRoles
-
      public function CheckUserRole($UserId, $RoleId)
      {
         $data = $this->db->table('userroles')->where('UserId' , ' = ', $UserId)->where('RoleId' , ' = ', $RoleId)->first();
@@ -84,8 +82,7 @@ class RoleModel extends Model {
         }
         if (!empty($PhoneNumber)){
             $data = $data->whereLike('PhoneNumber', $PhoneNumber);
-        }
-        
+        }        
         if (!empty($Role)){
             $data = $data->where('RoleId', ' = ', $Role);
         }

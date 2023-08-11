@@ -1,34 +1,40 @@
 <?php
 class Product extends Controller {
 
-    public $data = [];
+    public $data = [], $model = [];
 
-    public function index(){
-        echo 'Danh sách sản phẩm';
+    public $productModel;
+    public function __construct(){
+        //construct
+        $this->productModel = $this->model('ProductModel');
     }
 
-    public function list_product(){
-        $product = $this->model('ProductModel');
-        $dataProduct = $product->getProductLists();
+    public function CreateProduct($CategoryId, $Name, $Description, $Price, $Discount)
+    {
+        $request = $this->productModel->CreateProduct($CategoryId, $Name, $Description, $Price, $Discount);
+        $this->data['sub_content']['create_products'] = $request;
+        //$this->data['content'] = 'products/list';
 
-        $title = 'Danh sách sản phẩm';
+        //Render view
+        $this->render('layouts/client_layout', $this->data);
 
-        $this->data['sub_content']['product_list'] = $dataProduct;
-        $this->data['sub_content']['page_title'] = $title;
-        $this->data['page_title'] = $title;
-        $this->data['content'] = 'products/list';
+    }
+    public function UpdateProduct($Id, $CategoryId, $Name, $Description, $Price, $Discount, $Rank)
+    {
+        $request = $this->productModel->UpdateProduct($Id, $CategoryId, $Name, $Description, $Price, $Discount, $Rank);
+        $this->data['sub_content']['update_products'] = $request;
+        //$this->data['content'] = 'products/list';
 
         //Render view
         $this->render('layouts/client_layout', $this->data);
     }
+    public function DeleteProduct($Id)
+    {
+        $request = $this->productModel->DeleteProduct($Id);
+        $this->data['sub_content']['delete_products'] = $request;
+        //$this->data['content'] = 'products/list';
 
-    public function detail($id=0){
-        $product = $this->model('ProductModel');
-        $this->data['sub_content']['info'] = $product->getDetail($id);
-        $this->data['sub_content']['title'] = 'Chi tiết sản phẩm';
-        $this->data['page_title'] = 'Chi tiết sản phẩm';
-        $this->data['content'] = 'products/detail';
-
+        //Render view
         $this->render('layouts/client_layout', $this->data);
     }
 }
