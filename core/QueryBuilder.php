@@ -7,6 +7,7 @@ trait QueryBuilder{
     public $selectField = '*';
     public $limit = '';
     public $orderBy = '';
+    public $groupBy = '';
     public $innerJoin = '';
 
     public function table($tableName){
@@ -49,10 +50,11 @@ trait QueryBuilder{
         return $this;
     }
 
-    public function select($field='*'){
+    public function select($field){
         $this->selectField = $field;
         return $this;
     }
+  
 
     public function limit($offset, $number){
         $this->limit = " LIMIT $offset , $number ";
@@ -63,6 +65,18 @@ trait QueryBuilder{
     $this->db->orderBy('id', 'DESC')
     $this->db->orderBy('id ASC, name DESC');
     */
+
+    public function groupBy($field){
+        $fieldArr = array_filter(explode(',', $field));
+        if (!empty($fieldArr) && count($fieldArr) >= 2) {
+            // SQL GROUP BY multi
+            $this->groupBy = " GROUP BY " . implode(', ', $fieldArr);
+        } else {
+            $this->groupBy = " GROUP BY " . $field . " ";
+        }
+
+        return $this;
+    }
 
     public function orderBy($field, $type){
         $fieldArr = array_filter(explode(',', $field));
@@ -77,7 +91,7 @@ trait QueryBuilder{
     }
 
     public function get(){
-        $sqlQuery = "SELECT $this->selectField FROM $this->tableName $this->innerJoin $this->where $this->orderBy $this->limit";
+        $sqlQuery = "SELECT $this->selectField FROM $this->tableName $this->innerJoin $this->where $this->groupBy $this->orderBy $this->limit";
         $sqlQuery = trim($sqlQuery);
 
         $query = $this->query($sqlQuery);
@@ -94,7 +108,7 @@ trait QueryBuilder{
 
     //Inner join
     public function join($tableName, $relationship){
-        $this->innerJoin.='INNER JOIN '.$tableName.' ON '.$relationship.' ';
+        $this->innerJoin.=' JOIN '.$tableName.' ON '.$relationship.' ';
         return $this;
     }
 
@@ -144,6 +158,20 @@ trait QueryBuilder{
         return false;
     }
 
+    public function excuteOtherSQL($sqlQuery){
+
+        $query = $this->query($sqlQuery);
+
+        //Reset field
+        $this->resetQuery();
+
+        if (!empty($query)){
+
+            return $query->fetch(PDO::FETCH_ASSOC);
+        }
+        return false;
+    }
+
     public function resetQuery(){
         $this->tableName = '';
         $this->where = '';
@@ -152,6 +180,7 @@ trait QueryBuilder{
         $this->limit = '';
         $this->orderBy = '';
         $this->innerJoin = '';
+        $this->groupBy = '';
     }
 
 }

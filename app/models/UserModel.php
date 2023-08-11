@@ -8,12 +8,6 @@ class UserModel extends Model {
     function tableFill(){
         return 'users';
     }
-
-    function tableOther($table)
-    {
-        if($table = 'r') return 'roles';
-        if($table = 'ur') return 'userroles';
-    }
  
      function fieldFill(){
          return '*';
@@ -90,10 +84,10 @@ class UserModel extends Model {
         if (!empty($Username)){
             $data = $data->whereLike('Username', $Username);
         }
-        if (!empty($email)){
+        if (!empty($Email)){
             $data = $data->whereLike('Email', $Email);
         }
-        if (!empty($phoneNumber)){
+        if (!empty($PhoneNumber)){
             $data = $data->whereLike('PhoneNumber', $PhoneNumber);
         }
         if (!empty($StartDate) && !empty($EndDate)){
@@ -102,11 +96,4 @@ class UserModel extends Model {
         $data = $data->limit($Page, $PageSize)->orderBy('CreatedDate', 'DESC');
         return $data->get();
      }
-
-    //  public function UserCheckRole()
-    //  {
-
-    //  }
-
-
 }
