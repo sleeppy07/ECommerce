@@ -37,18 +37,9 @@
                             <i class="icon-bars"></i>
                         </button>
 
-                        <a href="index.html" class="logo">
+                        <a href="?" class="logo">
                             <img src="assets/images/logo.png" alt="Molla Logo" width="105" height="25">
                         </a>
-
-                        <nav class="main-nav">
-                            <ul class="menu sf-arrows">
-                                <li class="megamenu-container active"><a href="?" class="sf-with-ul">Home</a></li>
-                                <li><a href="?mod=product&act=main&cat_id=1" class="sf-with-ul">Mobile</a>
-                                <li><a href="?mod=product&act=main&cat_id=2" class="sf-with-ul">Macbook</a>
-                                </li>
-                            </ul><!-- End .menu -->
-                        </nav><!-- End .main-nav -->
                     </div><!-- End .header-left -->
 
                     <div class="header-right">
