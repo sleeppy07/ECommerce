@@ -10,6 +10,8 @@ trait QueryBuilder{
     public $groupBy = '';
     public $innerJoin = '';
 
+    public $paramBindingStr = '';
+
     public function table($tableName){
         $this->tableName = $tableName;
         return $this;
@@ -158,20 +160,37 @@ trait QueryBuilder{
         return false;
     }
 
-    public function executeProcedure($sqlQuery, $params = array()){
-        try {
-            $stmt = $this->prepare($sqlQuery);
-            $stmt->execute($params);
-            
-            // Reset field
-            $this->resetQuery();
-    
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
-            return false;
+    public function BindParams($params)
+    {
+        $paramArr = array_filter(explode(',', $params));
+
+        $paramBindings = array();
+        for ($i = 1; $i <= count($paramArr); $i++) {
+            $paramBindings[] = ":param$i";
         }
+        if(!empty($fielparamArrdArr) && count($paramArr)>=2)
+            $this->paramBindingStr = implode(', ', $paramBindings);
+        else $this->paramBindingStr = reset($paramBindings);
+        return $this;
     }
+
+    public function executeProcedure($procedureName, $params) {
+
+        $paramArr = array_filter(explode(',', $params));
+        $sqlQuery = "CALL $procedureName($this->paramBindingStr)";
+
+        $query = $this->execute($sqlQuery, $paramArr);
+
+        $this->resetQuery();
+
+        if (!empty($query)){
+
+            return true;
+        }
+        return false;
+
+    }
+
 
     public function resetQuery(){
         $this->tableName = '';
@@ -182,6 +201,7 @@ trait QueryBuilder{
         $this->orderBy = '';
         $this->innerJoin = '';
         $this->groupBy = '';
+        $this->paramBindingStr = '';
     }
 
 }
