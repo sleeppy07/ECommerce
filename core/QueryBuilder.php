@@ -158,18 +158,19 @@ trait QueryBuilder{
         return false;
     }
 
-    public function excuteOtherSQL($sqlQuery){
-
-        $query = $this->query($sqlQuery);
-
-        //Reset field
-        $this->resetQuery();
-
-        if (!empty($query)){
-
-            return $query->fetch(PDO::FETCH_ASSOC);
+    public function executeProcedure($sqlQuery, $params = array()){
+        try {
+            $stmt = $this->prepare($sqlQuery);
+            $stmt->execute($params);
+            
+            // Reset field
+            $this->resetQuery();
+    
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return false;
         }
-        return false;
     }
 
     public function resetQuery(){

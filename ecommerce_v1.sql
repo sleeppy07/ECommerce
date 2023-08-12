@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 09, 2023 at 12:09 PM
+-- Generation Time: Aug 12, 2023 at 08:20 AM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 8.1.10
 
@@ -25,21 +25,18 @@ DELIMITER $$
 --
 -- Procedures
 --
-CREATE DEFINER=`root`@`localhost` PROCEDURE `RegisterDefault` (`p_username` CHAR, `p_email` CHAR, `p_phoneNumber` CHAR, `p_password` CHAR, `p_gender` INT, `p_dob` DATE)   BEGIN
-	DECLARE account_count INT;
-    DECLARE account_id INT;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteUser` (`p_userid` INT)   BEGIN
+	DECLARE order_count INT;
     
-    SELECT COUNT(*) INTO account_count
-    FROM accounts 
-    WHERE Username = Username OR Email = Email OR PhoneNumber = PhoneNumber;
-    IF account_count = 0 THEN
-    	INSERT INTO accounts (Username, Email, PhoneNumber, Password) VALUES (p_username, p_email, p_phoneNumber, p_password);
-        SET account_id = LAST_INSERT_ID();
-        INSERT INTO accountroles (AccountId, RoleId) VALUES(account_id, 3);
-        INSERT INTO users (AccountId, Username, Fullname, Email, PhoneNumber, Gender, DOB)
-        SELECT Id, Username, Username, Email, PhoneNumber, p_gender, p_DOB
-        FROM accounts WHERE Id = account_id;
+    SELECT COUNT(*) INTO order_count
+    FROM orders WHERE UserId = p_userid;
+    IF order_count > 0 THEN
+    	DELETE FROM orderproducts WHERE OrderId IN (SELECT Id FROM orders WHERE UserId = p_userid);
+        -- Xóa các đơn hàng của user
+        DELETE FROM orders WHERE UserId = p_userid;
     END IF;
+    -- Xóa user cuối cùng
+    DELETE FROM users WHERE Id = p_userid;
 END$$
 
 DELIMITER ;
@@ -211,7 +208,10 @@ CREATE TABLE `userroles` (
 
 INSERT INTO `userroles` (`Id`, `UserId`, `RoleId`) VALUES
 (1, 1, 1),
-(2, 2, 2);
+(2, 2, 2),
+(3, 1, 2),
+(4, 1, 3),
+(5, 3, 3);
 
 -- --------------------------------------------------------
 
@@ -222,6 +222,7 @@ INSERT INTO `userroles` (`Id`, `UserId`, `RoleId`) VALUES
 CREATE TABLE `users` (
   `Id` int(11) NOT NULL,
   `Username` char(50) NOT NULL,
+  `Password` char(50) NOT NULL,
   `Fullname` varchar(150) NOT NULL,
   `Email` char(100) NOT NULL,
   `PhoneNumber` int(11) NOT NULL,
@@ -232,17 +233,28 @@ CREATE TABLE `users` (
   `Gender` int(11) NOT NULL,
   `DOB` date DEFAULT NULL,
   `CreatedDate` timestamp NOT NULL DEFAULT current_timestamp(),
-  `LastModifiedDate` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `Password` char(50) NOT NULL
+  `LastModifiedDate` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`Id`, `Username`, `Fullname`, `Email`, `PhoneNumber`, `Address`, `Avatar`, `Cover`, `Bio`, `Gender`, `DOB`, `CreatedDate`, `LastModifiedDate`, `Password`) VALUES
-(1, 'admin', 'admin', 'admin@gmail.com', 999000001, NULL, NULL, NULL, NULL, 0, '1981-08-13', '2023-08-02 18:54:25', '2023-08-03 01:54:25', ''),
-(2, 'employeeA', 'employeeA', 'employeeA@gmail.com', 999000002, NULL, NULL, NULL, NULL, 0, '1992-08-17', '2023-08-02 18:54:25', '2023-08-03 01:54:25', '');
+INSERT INTO `users` (`Id`, `Username`, `Password`, `Fullname`, `Email`, `PhoneNumber`, `Address`, `Avatar`, `Cover`, `Bio`, `Gender`, `DOB`, `CreatedDate`, `LastModifiedDate`) VALUES
+(1, 'admin', '', 'admin', 'admin@gmail.com', 999000001, NULL, NULL, NULL, NULL, 0, '1981-08-13', '2023-08-02 18:54:25', '2023-08-03 01:54:25'),
+(2, 'employeeA', '', 'employeeA', 'employeeA@gmail.com', 999000002, NULL, NULL, NULL, NULL, 0, '1992-08-17', '2023-08-04 18:54:25', '2023-08-10 21:25:35'),
+(3, 'employeeB', '123456', 'employeeB', 'employeeB@gmail.com', 999888777, '', 'https://static.vecteezy.com/system/resources/previews/009/734/564/original/default-avatar-profile-icon-of-social-media-user-vector.jpg', 'https://atiinc.org/wp-content/uploads/2017/01/cover-default.jpg', '', 0, '1992-08-17', '2023-08-12 04:00:41', '2023-08-12 11:00:41');
+
+--
+-- Triggers `users`
+--
+DELIMITER $$
+CREATE TRIGGER `AddUserRole` AFTER INSERT ON `users` FOR EACH ROW BEGIN
+    INSERT INTO userroles (UserId, RoleId)
+    VALUES (NEW.Id, 3);
+END
+$$
+DELIMITER ;
 
 --
 -- Indexes for dumped tables
@@ -402,13 +414,13 @@ ALTER TABLE `specifications`
 -- AUTO_INCREMENT for table `userroles`
 --
 ALTER TABLE `userroles`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables

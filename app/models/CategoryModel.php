@@ -99,11 +99,16 @@ class CategoryModel extends Model{
         if($result) echo 'Detele Successful.';
         else echo 'Delete Fail.';
      }
-     public function ListCategory()
+     public function ListCategory($CategoryId, $Node)
      {
         $tableName = $this->tableFill();
-        $data = $this->db->table($tableName)->where('Node', '=', 1);
-        return $data->get();
+        $data = $this->db->table($tableName);
+        //Get all Category Node = 1
+        if(empty($CategoryId) && empty($Node))
+        {
+            return $data->where('Node', '=', 1)->get();
+        }
+        return $data->where('ParentCategoryId', '=', $CategoryId)->where('Node', '=', $Node)->get();
      }
      public function DetailCategory($CategoryId)
      {

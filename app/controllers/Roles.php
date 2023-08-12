@@ -17,9 +17,9 @@ class Roles extends Controller{
         $this->render('layouts/client_layout', $this->data);
     }
     
-    public function CheckUserRole($UserId){
+    public function CheckUserRole($UserId, $RoleId){
 
-        $request = $this->roleModel->CheckUserRole($UserId);
+        $request = $this->roleModel->CheckUserRole($UserId, $RoleId);
         $this->data['sub_content']['check_UserRoles'] = $request;
         //$this->data['content'] = 'roles/check'; //render view
 

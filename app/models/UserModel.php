@@ -16,6 +16,18 @@ class UserModel extends Model {
      function primaryKey(){
          return 'Id';
      }
+
+     public function UserCheck($Login, $Password)
+     {
+        $tableName = $this->tableFill();
+        $check = $this->db->table($tableName)
+                            ->orWhere('Username', '=', $Login)
+                            ->orWhere('Email', '=', $Login)
+                            ->orWhere('PhoneNumber', '=', $Login)
+                            ->where('Password', '=', $Password)->first();
+        if($check) return $check;
+        return null;
+     }
  
      public function UserCreate($Username, $Email, $PhoneNumber, $Password, $Gender, $DOB)
      {
@@ -96,4 +108,16 @@ class UserModel extends Model {
         $data = $data->limit($Page, $PageSize)->orderBy('CreatedDate', 'DESC');
         return $data->get();
      }
+
+     public function DeleteUser($Id)
+     {
+        $sqlQuery = "CALL DeleteUser(:p_userid)";
+        $params = array(
+            'p_userid' => $Id
+        );
+        $result = $this->db->executeProcedure($sqlQuery, $params);
+        if($result) echo 'Detele Successful.';
+        else echo 'Delete Fail.';
+     }
+
 }
