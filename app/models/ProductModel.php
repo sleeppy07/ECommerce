@@ -77,7 +77,6 @@ class ProductModel extends Model{
         }
         $data = $data->limit($Page, $PageSize);
         return $data->get();
-
      }
      public function DetailProduct($Id)
      {

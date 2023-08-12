@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 12, 2023 at 08:20 AM
+-- Generation Time: Aug 12, 2023 at 01:10 PM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 8.1.10
 
@@ -25,18 +25,18 @@ DELIMITER $$
 --
 -- Procedures
 --
-CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteUser` (`p_userid` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteUser` (IN `param1` INT)   BEGIN
 	DECLARE order_count INT;
     
     SELECT COUNT(*) INTO order_count
-    FROM orders WHERE UserId = p_userid;
+    FROM orders WHERE UserId = param1;
     IF order_count > 0 THEN
-    	DELETE FROM orderproducts WHERE OrderId IN (SELECT Id FROM orders WHERE UserId = p_userid);
+    	DELETE FROM orderproducts WHERE OrderId IN (SELECT Id FROM orders WHERE UserId = param1);
         -- Xóa các đơn hàng của user
-        DELETE FROM orders WHERE UserId = p_userid;
+        DELETE FROM orders WHERE UserId = param1;
     END IF;
     -- Xóa user cuối cùng
-    DELETE FROM users WHERE Id = p_userid;
+    DELETE FROM users WHERE Id = param1;
 END$$
 
 DELIMITER ;
@@ -68,6 +68,15 @@ CREATE TABLE `categories` (
   `ParentCategoryId` int(11) DEFAULT NULL,
   `Node` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`Id`, `Name`, `Description`, `ParentCategoryId`, `Node`) VALUES
+(1, 'Điện thoại', '', NULL, 1),
+(2, 'Hãng', '', 1, 2),
+(3, 'Iphone', '', 2, 3);
 
 -- --------------------------------------------------------
 
@@ -120,6 +129,18 @@ CREATE TABLE `productcomments` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `productimages`
+--
+
+CREATE TABLE `productimages` (
+  `Id` int(11) NOT NULL,
+  `ProductId` int(11) NOT NULL,
+  `Value` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `productlabels`
 --
 
@@ -128,6 +149,14 @@ CREATE TABLE `productlabels` (
   `ProductId` int(11) NOT NULL,
   `Type` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `productlabels`
+--
+
+INSERT INTO `productlabels` (`Id`, `ProductId`, `Type`) VALUES
+(1, 1, 0),
+(2, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -144,6 +173,13 @@ CREATE TABLE `products` (
   `Discount` double DEFAULT NULL,
   `Rank` char(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`Id`, `CategoryId`, `Name`, `Description`, `Price`, `Discount`, `Rank`) VALUES
+(1, 3, 'Iphone 14', 'best', 14000000, 13000000, NULL);
 
 -- --------------------------------------------------------
 
@@ -299,6 +335,13 @@ ALTER TABLE `productcomments`
   ADD KEY `UserId` (`UserId`);
 
 --
+-- Indexes for table `productimages`
+--
+ALTER TABLE `productimages`
+  ADD PRIMARY KEY (`Id`),
+  ADD KEY `ProductId` (`ProductId`);
+
+--
 -- Indexes for table `productlabels`
 --
 ALTER TABLE `productlabels`
@@ -360,7 +403,7 @@ ALTER TABLE `carts`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `orderproducts`
@@ -381,16 +424,22 @@ ALTER TABLE `productcomments`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `productimages`
+--
+ALTER TABLE `productimages`
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `productlabels`
 --
 ALTER TABLE `productlabels`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -458,6 +507,12 @@ ALTER TABLE `orders`
 ALTER TABLE `productcomments`
   ADD CONSTRAINT `productcomments_ibfk_1` FOREIGN KEY (`ProductId`) REFERENCES `products` (`Id`),
   ADD CONSTRAINT `productcomments_ibfk_2` FOREIGN KEY (`UserId`) REFERENCES `users` (`Id`);
+
+--
+-- Constraints for table `productimages`
+--
+ALTER TABLE `productimages`
+  ADD CONSTRAINT `productimages_ibfk_1` FOREIGN KEY (`ProductId`) REFERENCES `products` (`Id`);
 
 --
 -- Constraints for table `productlabels`

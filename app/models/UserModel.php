@@ -111,11 +111,8 @@ class UserModel extends Model {
 
      public function DeleteUser($Id)
      {
-        $sqlQuery = "CALL DeleteUser(:p_userid)";
-        $params = array(
-            'p_userid' => $Id
-        );
-        $result = $this->db->executeProcedure($sqlQuery, $params);
+
+        $result = $this->db->BindParams($Id)->executeProcedure('DeleteUser', $Id);
         if($result) echo 'Detele Successful.';
         else echo 'Delete Fail.';
      }

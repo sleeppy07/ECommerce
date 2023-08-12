@@ -100,6 +100,29 @@ class Database{
 
     }
 
+    //Call Procedure
+    function execute($sql, $params){
+
+        try{
+            $paramCount = count($params);
+            $statement = $this->__conn->prepare($sql);
+            for ($i = 1; $i <= $paramCount; $i++) {
+                $statement->bindParam(":param$i", $params[$i - 1]);
+            }
+
+            $statement->execute();
+
+            return $statement;
+
+        }catch (Exception $exception){
+            $mess = $exception->getMessage();
+            $data['message'] = $mess;
+            App::$app->loadError('database', $data);
+            die();
+        }
+
+    }
+
     //Trả về id mới nhất sau khi đã insert
     function lastInsertId(){
         return $this->__conn->lastInsertId();
