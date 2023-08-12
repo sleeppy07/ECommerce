@@ -2,44 +2,87 @@
     require 'inc/header.php';
     
 ?>
-<body>
-    <div class="page-wrapper">
-        
 
-        <main class="main">
-            <div class="intro-section bg-lighter pt-5 pb-6">
-                <div class="container">
-                    <div class="row">
-                        <?php require_once 'inc/sidebar.php' ?>
-                        <img src="/assets/images/about/about-2/img-1.jpg" alt="">
-                    </div><!-- End .row -->
+<?php
 
-                    <div class="mb-6"></div><!-- End .mb-6 -->
+//gọi hàm 
+$list_laptop = get_product_by_id('1');
+$list_macbook = get_product_by_id('2');
+$list_mobile = get_product_by_id('3');
+//show_array($list_item);
 
-                    <div class="owl-carousel owl-simple" data-toggle="owl" 
-                        data-owl-options='{
-                            "nav": false, 
-                            "dots": false,
-                            "margin": 30,
-                            "loop": false,
-                            "responsive": {
-                                "0": {
-                                    "items":2
-                                },
-                                "420": {
-                                    "items":3
-                                },
-                                "600": {
-                                    "items":4
-                                },
-                                "900": {
-                                    "items":5
-                                },
-                                "1024": {
-                                    "items":6
-                                }
-                            }
-                        }'>
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css.css">
+</head>
+
+<body style="margin: 0 150px">
+
+    <div>
+        <a href="?mod=product&act=main&cat_id=1" > <h2> <?php echo 'Laptop' ?></h2></a >
+        <p> Có <?php echo count($list_laptop) ?> sản phẩm </p>
+        <div class="section_detail">
+            <ul style="display: flex; flex-wrap:wrap" class='item_list'>
+                <?php foreach ($list_laptop as $item) {
+                ?>
+                    <li style="width:200px; margin-right:30px" class="item">
+                        <a href="<?php echo $item['url'] ?>">
+                            <img style="height: 200px;" src="<?php echo $item['product_thumb'] ?>" alt="">
+                        </a>
+                        <a href="<?php echo $item['url'] ?>"> <?php echo $item['product_name'] ?></a>
+                        <p> <?php echo currency($item['price']) ?></p>
+                    </li>
+                <?php } ?>
+            </ul>
+        </div>
+    </div>
+
+    <div>
+        <a href="?mod=product&act=main&cat_id=2"  > <h2> <?php echo 'Macbook' ?></h2></a >
+        <p> Có <?php echo count($list_macbook) ?> sản phẩm </p>
+        <div class="section_detail">
+            <ul style="display: flex; flex-wrap:wrap" class='item_list'>
+                <?php foreach ($list_macbook as $item) {
+                ?>
+                    <li style="width:200px; margin-right:30px" class="item">
+                        <a href="<?php echo $item['url'] ?>">
+                            <img style="height: 200px;" src="<?php echo $item['product_thumb'] ?>" alt="">
+                        </a>
+                        <a href="<?php echo $item['url'] ?>"> <?php echo $item['product_name'] ?></a>
+                        <p> <?php echo number_format($item['price'], '0', ',', '.') . ' Đ' ?></p>
+                    </li>
+                <?php } ?>
+            </ul>
+        </div>
+    </div>
+
+    <div>
+        <a href="?mod=product&act=main&cat_id=3"  > <h2><?php echo 'Mobile' ?></h2> </a >
+        <p> Có <?php echo count($list_mobile) ?> sản phẩm </p>
+        <div class="section_detail">
+            <ul style="display: flex; flex-wrap:wrap" class='item_list'>
+                <?php foreach ($list_mobile as $item) {
+                ?>
+                    <li style="width:200px; margin-right:30px" class="item">
+                        <a href="<?php echo $item['url'] ?>">
+                            <img style="height: 200px;" src="<?php echo $item['product_thumb'] ?>" alt="">
+                        </a>
+                        <a href="<?php echo $item['url'] ?>"> <?php echo $item['product_name'] ?></a>
+                        <p> <?php echo number_format($item['price'], '0', ',', '.') . ' Đ' ?></p>
+                    </li>
+                <?php } ?>
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>
                         <a href="#" class="brand">
                             <img src="assets/images/brands/1.png" alt="Brand Name">
                         </a>
