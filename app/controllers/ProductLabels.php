@@ -36,9 +36,9 @@ class ProductLabels extends Controller {
         //Render view
         $this->render('layouts/client_layout', $this->data);
     }
-    public function ListProductLabel()
+    public function ListProductLabel($Name, $Type, $Page, $PageSize)
     {
-        $request = $this->ProductLabelModel->ListProductLabel();
+        $request = $this->ProductLabelModel->ListProductLabel($Name, $Type, $Page, $PageSize);
         $this->data['sub_content']['list_productlabels'] = $request;
         //$this->data['content'] = 'productlabels/check'; //render view
 

@@ -32,7 +32,7 @@ class ProductLabelModel extends Model{
      public function UpdateProductLabel($ProductId, $Type)
      {
         $tableName = $this->tableFill();
-        $check = $this->db->table($tableName)->where('ProductId' , '=' , $ProductId)->get();
+        $check = $this->db->table($tableName)->where('ProductId' , '=' , $ProductId)->first();
         if(count($check) == 2){
             echo "Product had this label";
             return; 
