@@ -19,7 +19,7 @@ if(isset($_POST['btn-login'])){
         if(check_login($username,$password)){
             $_SESSION['is_login']=true;
             $_SESSION['user_login']=$username;
-            header('Location:?');
+            redirect('?');
         } else {
             $error['login']='Username or password incorrect';
         } 
