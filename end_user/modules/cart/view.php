@@ -13,7 +13,7 @@ require_once 'inc/header.php';
 							<tr>
 								<th>Product</th>
 								<th>Price</th>
-								<th style="display: flex; justify-content: center;">Quantity</th>
+								<th style="display: block; text-align: center;width: 70px;">Quantity</th>
 								<th>Total</th>
 								<th> Delete</th>
 							</tr>
@@ -41,7 +41,7 @@ require_once 'inc/header.php';
 										<td class="price-col"><?php echo currency($item['price']) ?></td>
 										<td class="quantity-col">
 											<div class="cart-product-quantity">
-												<p style="display: flex; justify-content: center;" class=" "><?php echo $item['quantity'] ?> </p>
+												<input type="number" min="1" max="100" style="display: block; text-align: center;" name="quantity" class=" " value='<?php echo $item['quantity'] ?>'  >
 											</div><!-- End .cart-product-quantity -->
 										</td>
 										<td style="    width: 112px;" class="total-col"><?php echo currency($item['subtotal']) ?></td>
@@ -58,26 +58,29 @@ require_once 'inc/header.php';
 											</a>
 										</td>
 									</tr>
+									<tr>
+										
+									</tr>
 							<?php
 								}
-							} else echo "<p> Không có sản phẩm nào trong giỏ hàng</p>"
+							} 
 							?>
 						</tbody>
 
 					</table><!-- End .table table-wishlist -->
 
 					<div class="cart-bottom">
-						<div class="cart-discount">
+						<!-- <div class="cart-discount">
 							<form action="" method="">
 								<div class="input-group">
 									<input type="text" class="form-control" required placeholder="coupon code">
 									<div class="input-group-append">
 										<button class="btn btn-outline-primary-2" type="submit"><i class="icon-long-arrow-right"></i></button>
-									</div><!-- .End .input-group-append -->
-								</div><!-- End .input-group -->
+									</div>
+								</div>
 							</form>
-						</div><!-- End .cart-discount -->
-						<div style=" border: 1px #c96;   margin-left: 360px;">
+						</div>End .cart-discount -->
+						<div style=" border: 1px #c96;   margin-left: 680px;">
 							<a style="color: #ce5050; " href="?mod=cart&act=delete_all"> Delete all items</a>
 						</div>
 					</div><!-- End .cart-bottom -->
@@ -90,7 +93,7 @@ require_once 'inc/header.php';
 							<tbody>
 								<tr class="summary-subtotal">
 									<td style="width: 100px; "> Subtotal:</td>
-									<td style=" color: #c96"> <?php echo currency($_SESSION['cart']['info']['total']) ?></td>
+									<td style=" color: #c96"> <?php if(isset($_SESSION['cart'])) echo currency($_SESSION['cart']['info']['total']) ?></td>
 								</tr><!-- End .summary-subtotal -->
 								<tr class="summary-shipping">
 									<td>Shipping:</td>
@@ -136,7 +139,7 @@ require_once 'inc/header.php';
 							</tbody>
 						</table><!-- End .table table-summary -->
 
-						<a href="checkout.html" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
+						<a href="?mod=cart&act=checkout" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
 					</div><!-- End .summary -->
 
 				</aside><!-- End .col-lg-3 -->

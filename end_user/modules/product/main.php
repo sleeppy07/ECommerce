@@ -21,7 +21,7 @@ $list_item=get_product_by_id($cat_id);
 <body style="margin: 0 150px">
 
     <h2> <?php echo $cate['cat_title'] ?></h2>
-    <p> Có <?php echo count($list_item) ?> sản phẩm </p>
+    <p>  <?php echo count($list_item) ?> products </p>
     <div class="section_detail">
         <ul style="display: flex; flex-wrap:wrap"  class='item_list' >
         <?php foreach ($list_item as $item){
@@ -31,7 +31,7 @@ $list_item=get_product_by_id($cat_id);
                     <img style="height: 200px;" src="<?php echo $item['product_thumb'] ?>" alt="">
                 </a>
                 <a href="<?php echo $item['url'] ?>"> <?php echo $item['product_name'] ?></a>
-                <p> <?php echo number_format($item['price'],'0',',','.').' Đ' ?></p>
+                <p> <?php echo currency($item['price']) ?></p>
             </li>
         <?php } ?>
         </ul>

@@ -4,7 +4,8 @@ require_once 'inc/header.php';
 <?php
 $id = (int) $_GET["id"];
 //gọi hàm 
-$item = get_product_detail($id)
+$item = get_product_detail($id);
+//show_array($item);
 ?>
 <div class="page-content">
     <div class="container">
