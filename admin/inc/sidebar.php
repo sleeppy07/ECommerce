@@ -28,7 +28,10 @@
 
     <!-- Template Stylesheet -->
     <link rel="stylesheet" href="./assets/css/style.css">
+    <!-- ckeditor -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/38.1.1/classic/ckeditor.js"></script>
 </head>
+
 <body>
     <div style=" margin-left: 250px;" class="container-xxl position-relative bg-white d-flex p-0">
         <!-- Sidebar Start -->
@@ -37,18 +40,20 @@
                 <a href="index.html" class="navbar-brand mx-4 mb-3">
                     <h3 class="text-primary"><i class="fa fa-hashtag me-2"></i>DASHMIN</h3>
                 </a>
-                
+
                 <div class="navbar-nav w-100">
-                    <a href="index.html" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+                    <!-- <a href="index.html" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a> -->
                     <div class="nav-item dropdown">
-                        
+
                     </div>
 
-                    <a href="form.html" class="nav-item nav-link active"><i class="fa fa-keyboard me-2"></i>Forms</a>
-                    <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>
-
+                    <a href="?" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Home</a>
+                    <a href="?mod=cate&act=main" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Manage category</a>
+                    <a href="?mod=product&act=main" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Manage product</a>
+                    <a href="?mod=order&act=main" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Manage order</a>
+                    <a href="?mod=account&act=main" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Manage account</a>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
+                        <!-- <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a> -->
                         <div class="dropdown-menu bg-transparent border-0">
                             <a href="signin.html" class="dropdown-item">Sign In</a>
                             <a href="signup.html" class="dropdown-item">Sign Up</a>
@@ -60,7 +65,7 @@
             </nav>
         </div>
         <!-- Sidebar End -->
-        <div style="margin-left: 0px;      width: calc(100% - 50px);" class="content">
+        <div style="margin-left: 0px;      width: calc(100% - 50px);" class="">
             <!-- Navbar Start -->
             <nav class="navbar navbar-expand bg-light navbar-light sticky-top px-4 py-0">
                 <a href="index.html" class="navbar-brand d-flex d-lg-none me-4">
@@ -73,24 +78,25 @@
                     <input class="form-control border-0" type="search" placeholder="Search">
                 </form>
                 <div class="navbar-nav align-items-center ms-auto">
-                    
-                    
-                    </div>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <img class="rounded-circle me-lg-2" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                            <span class="d-none d-lg-inline-flex">John Doe</span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                            <a href="#" class="dropdown-item">My Profile</a>
-                            <a href="#" class="dropdown-item">Settings</a>
-                            <a href="#" class="dropdown-item">Log Out</a>
-                        </div>
+
+
+                </div>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        <img class="rounded-circle me-lg-2" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                        <span class="d-none d-lg-inline-flex">John Doe</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
+                        <a href="#" class="dropdown-item">My Profile</a>
+                        <a href="#" class="dropdown-item">Settings</a>
+                        <a href="#" class="dropdown-item">Log Out</a>
                     </div>
                 </div>
-            </nav>
-            <!-- Navbar End -->
-            <!-- JavaScript Libraries -->
+        </div>
+        </nav>
+        <!-- Navbar End -->
+        <!-- JavaScript Libraries -->
+    </div>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/lib/chart/chart.min.js"></script>
