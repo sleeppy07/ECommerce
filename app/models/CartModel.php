@@ -60,17 +60,17 @@ class CartModel extends Model{
     $this->db->table($tableName)->where('ProductId' , '=' , $ProductId)->update($data);
     return $check;
  }
- public function ListCart($Page, $PageSize)
+ public function ListCart($Page, $PageSize, $UserId)
  {
     $tableProductImage = 'productimages';
     $tableProduct = 'products';
-    $tableCart = 'Carts';
+    $tableCart = $this->tableFill();
     $relationshipCartAndProduct = $tableCart . '.ProductId' . ' = ' . $tableProduct . '.Id';
     $relationProductImageAndProduct = $tableProductImage . '.ProductId' . ' = ' . $tableProduct . '.Id';
-    $data = $this->db->select($tableProductImage.'.ProductId, '.$tableProduct.'.Name, '.$tableProduct.'.Price, '.$tableProduct.'.Discount, '.$tableCart.'.Quantity, '.$tableProduct.'.Discount*'.$tableCart.'.Quantity AS Total')
+    $data = $this->db->select($tableProductImage.'.ProductId, '.$tableProductImage.'.Value, '.$tableProduct.'.Name, '.$tableProduct.'.Price, '.$tableProduct.'.Discount, '.$tableCart.'.Quantity, '.$tableProduct.'.Discount*'.$tableCart.'.Quantity AS Total')
                         ->table($tableCart)
                         ->join($tableProduct, $relationshipCartAndProduct)
-                        ->join($tableProductImage, $relationProductImageAndProduct)
+                        ->join($tableProductImage, $relationProductImageAndProduct)->Where($tableCart.'.UserId', ' = ', $UserId)
                         ->groupBy($tableProduct.'.Id, '.$tableProduct.'.Name, '.$tableProduct.'.Price, '.$tableProduct.'.Discount');
                       
         $data = $data->limit($Page, $PageSize);

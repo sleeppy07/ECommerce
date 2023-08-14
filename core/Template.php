@@ -133,6 +133,7 @@ class Template {
                 $this->__content = str_replace($matches[0][$key], '<?php foreach ('.$item.'): ?>', $this->__content);
             }
         }
+        
 
         preg_match_all('~@endforeach\s*$~im', $this->__content, $matches);
 

@@ -36,11 +36,11 @@ class Carts extends Controller {
         //Render view
         $this->render('layouts/client_layout', $this->data);
     }
-    public function ListCart($Page, $PageSize)
+    public function ListCart($Page = 0, $PageSize = 2, $UserId = 2)
     {
-        $request = $this->CartModel->ListCart($Page, $PageSize);
-        $this->data['sub_content']['list_Carts'] = $request;
-        //$this->data['content'] = 'Carts/check'; //render view
+        $request = $this->CartModel->ListCart($Page, $PageSize, $UserId);
+        $this->data['sub_content']['list_carts'] = $request;
+        $this->data['content'] = 'carts/view'; //render view
 
         $this->render('layouts/client_layout', $this->data);
     }
