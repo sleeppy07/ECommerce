@@ -7,6 +7,13 @@ class Home extends Controller{
         $this->province = $this->model('HomeModel');
     }
 
+
+    
+
+
+
+
+
     public function index(){
 //        $data = $this->province->getListProvince();
 //        echo '<pre>';

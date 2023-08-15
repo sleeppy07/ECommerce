@@ -38,11 +38,11 @@ class Product extends Controller {
         $this->render('layouts/client_layout', $this->data);
     }
     
-    public function ListProduct($CategoryId, $Name, $Page, $PageSize)
+    public function ListProduct($CategoryId = 3, $Name = null, $Page = 0, $PageSize=2)
     {
         $request = $this->productModel->ListProduct($CategoryId, $Name, $Page, $PageSize);
         $this->data['sub_content']['list_products'] = $request;
-        //$this->data['content'] = 'products/list';
+        $this->data['content'] = 'home/main';
 
         //Render view
         $this->render('layouts/client_layout', $this->data);

@@ -2,10 +2,10 @@
 -- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th8 14, 2023 lúc 01:48 PM
--- Phiên bản máy phục vụ: 10.4.24-MariaDB
--- Phiên bản PHP: 8.1.6
+-- Host: localhost
+-- Generation Time: Aug 15, 2023 at 03:34 PM
+-- Server version: 10.4.25-MariaDB
+-- PHP Version: 8.1.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,25 +18,69 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Cơ sở dữ liệu: `ecommerce_v1`
+-- Database: `ecommerce_v1`
 --
 
 DELIMITER $$
 --
--- Thủ tục
+-- Procedures
 --
-CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteUser` (`p_userid` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `CreateOrder` (IN `param1` INT, IN `param2` VARCHAR(150), IN `param3` VARCHAR(255), IN `param4` INT, IN `param5` DOUBLE)   BEGIN
+    DECLARE order_id INT;
+	DECLARE product_count INT;
+    DECLARE total_payment DOUBLE;
+    DECLARE total_price DOUBLE;
+    
+    SELECT COUNT(*) INTO product_count
+    FROM carts WHERE UserId = param1;
+    IF product_count > 0 THEN
+    	-- Tìm tổng giá tiền toàn bộ đơn hàng
+    	SELECT SUM(products.Discount * carts.Quantity) INTO total_price
+        FROM carts
+        JOIN products ON carts.ProductId = products.Id
+        WHERE carts.UserId = param1;
+    
+        -- Tạo đơn hàng trong bảng orders
+        INSERT INTO orders (UserId, Status, Fullname, Address, PhoneNumber, TotalPayment, TotalPrice, ShippingFee)
+        VALUES (param1, 0, param2, param3, param4, param5 + total_price, total_price, param5);
+
+        SET order_id = LAST_INSERT_ID();
+
+        -- Thêm các sản phẩm từ giỏ hàng vào bảng orderproducts
+        INSERT INTO orderproducts (OrderId, ProductId, Quantity)
+        SELECT order_id, ProductId, Quantity
+        FROM carts
+        WHERE UserId = param1;
+
+        -- Xóa các sản phẩm từ giỏ hàng sau khi thêm vào đơn hàng
+        DELETE FROM carts
+        WHERE UserId = param1;
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteOrder` (IN `param1` INT)   BEGIN
+    -- Xóa các bản ghi trong bảng OrderProducts liên quan đến orderId
+    DELETE FROM orderproducts WHERE OrderId = param1;
+
+    -- Xóa bản ghi trong bảng Orders có orderId tương ứng
+    DELETE FROM Orders WHERE Id = param1;
+    
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteUser` (IN `param1` INT)   BEGIN
 	DECLARE order_count INT;
     
     SELECT COUNT(*) INTO order_count
-    FROM orders WHERE UserId = p_userid;
+    FROM orders WHERE UserId = param1;
     IF order_count > 0 THEN
-    	DELETE FROM orderproducts WHERE OrderId IN (SELECT Id FROM orders WHERE UserId = p_userid);
+    	DELETE FROM orderproducts WHERE OrderId IN (SELECT Id FROM orders WHERE UserId = param1);
         -- Xóa các đơn hàng của user
-        DELETE FROM orders WHERE UserId = p_userid;
+        DELETE FROM orders WHERE UserId = param1;
     END IF;
+    -- Xoá role user
+    DELETE FROM userroles WHERE UserId = param1;
     -- Xóa user cuối cùng
-    DELETE FROM users WHERE Id = p_userid;
+    DELETE FROM users WHERE Id = param1;
 END$$
 
 DELIMITER ;
@@ -44,28 +88,20 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `carts`
+-- Table structure for table `carts`
 --
 
 CREATE TABLE `carts` (
   `Id` int(11) NOT NULL,
   `ProductId` int(11) NOT NULL,
   `UserId` int(11) NOT NULL,
-  `IsChoice` tinyint(1) NOT NULL,
   `Quantity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Đang đổ dữ liệu cho bảng `carts`
---
-
-INSERT INTO `carts` (`Id`, `ProductId`, `UserId`, `IsChoice`, `Quantity`) VALUES
-(1, 1, 2, 0, 2);
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `categories`
+-- Table structure for table `categories`
 --
 
 CREATE TABLE `categories` (
@@ -77,7 +113,7 @@ CREATE TABLE `categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Đang đổ dữ liệu cho bảng `categories`
+-- Dumping data for table `categories`
 --
 
 INSERT INTO `categories` (`Id`, `Name`, `Description`, `ParentCategoryId`, `Node`) VALUES
@@ -101,7 +137,7 @@ INSERT INTO `categories` (`Id`, `Name`, `Description`, `ParentCategoryId`, `Node
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `orderproducts`
+-- Table structure for table `orderproducts`
 --
 
 CREATE TABLE `orderproducts` (
@@ -111,43 +147,57 @@ CREATE TABLE `orderproducts` (
   `Quantity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `orderproducts`
+--
+
+INSERT INTO `orderproducts` (`Id`, `ProductId`, `OrderId`, `Quantity`) VALUES
+(1, 1, 1, 2);
+
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `orders`
+-- Table structure for table `orders`
 --
 
 CREATE TABLE `orders` (
   `Id` int(11) NOT NULL,
   `UserId` int(11) NOT NULL,
   `Status` int(11) NOT NULL,
+  `Fullname` varchar(150) NOT NULL,
   `Address` varchar(255) NOT NULL,
   `PhoneNumber` int(11) NOT NULL,
   `TotalPayment` double DEFAULT NULL,
   `TotalPrice` double DEFAULT NULL,
   `ShippingFee` double DEFAULT NULL,
-  `CreatedDate` timestamp NOT NULL DEFAULT current_timestamp(),
-  `Fullname` varchar(150) NOT NULL
+  `CreatedDate` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`Id`, `UserId`, `Status`, `Fullname`, `Address`, `PhoneNumber`, `TotalPayment`, `TotalPrice`, `ShippingFee`, `CreatedDate`) VALUES
+(1, 2, 0, 'Thu Haf', 'BBBB', 98765432, 58030000, 58000000, 30000, '2023-08-15 12:13:55');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `productcomments`
+-- Table structure for table `productcomments`
 --
 
 CREATE TABLE `productcomments` (
   `Id` int(11) NOT NULL,
   `ProductId` int(11) NOT NULL,
   `UserId` int(11) NOT NULL,
-  `Avatar` text NOT NULL,
-  `Fullname` varchar(150) NOT NULL,
+  `Avatar` text DEFAULT NULL,
+  `Fullname` varchar(150) DEFAULT NULL,
   `Rank` int(11) NOT NULL,
   `Comment` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Đang đổ dữ liệu cho bảng `productcomments`
+-- Dumping data for table `productcomments`
 --
 
 INSERT INTO `productcomments` (`Id`, `ProductId`, `UserId`, `Avatar`, `Fullname`, `Rank`, `Comment`) VALUES
@@ -156,12 +206,61 @@ INSERT INTO `productcomments` (`Id`, `ProductId`, `UserId`, `Avatar`, `Fullname`
 (3, 1, 6, 'https://static.vecteezy.com/system/resources/previews/009/734/564/original/default-avatar-profile-icon-of-social-media-user-vector.jpg', 'Nguyễn Văn A', 5, 'Máy mượt, pin khoẻ, bàn phím nhẹ, loa to. Bản 256GB phù hợp với dân văn phòng. Giá sản phẩm cạnh tranh, nhân viên tư vấn nhiệt tình.'),
 (4, 1, 10, 'https://static.vecteezy.com/system/resources/previews/009/734/564/original/default-avatar-profile-icon-of-social-media-user-vector.jpg', 'Nguyễn Văn B', 4, ' vừa mua chưa được 1 tuần thì thấy sale. tức thật'),
 (5, 19, 15, 'https://static.vecteezy.com/system/resources/previews/009/734/564/original/default-avatar-profile-icon-of-social-media-user-vector.jpg', 'Nguyễn Thị Bảo', 5, 'Sản phẩm tốt. Pin trâu, chạy mượt gần như tất cả ứng dụng'),
-(6, 19, 24, 'https://static.vecteezy.com/system/resources/previews/009/734/564/original/default-avatar-profile-icon-of-social-media-user-vector.jpg', 'Lê Thị Thu', 5, 'Ok lắm');
+(6, 19, 24, 'https://static.vecteezy.com/system/resources/previews/009/734/564/original/default-avatar-profile-icon-of-social-media-user-vector.jpg', 'Lê Thị Thu', 5, 'Ok lắm'),
+(7, 7, 7, 'https://static.vecteezy.com/system/resources/previews/009/734/564/original/default-avatar-profile-icon-of-social-media-user-vector.jpg', 'Bình Trần', 5, 'Sản phẩm hay ạ');
+
+--
+-- Triggers `productcomments`
+--
+DELIMITER $$
+CREATE TRIGGER `AddFullnameAndAvatarComment` AFTER INSERT ON `productcomments` FOR EACH ROW BEGIN
+    DECLARE v_Fullname NVARCHAR(255);
+    DECLARE v_Avatar TEXT;
+
+    -- Lấy thông tin họ tên và hình đại diện từ bảng users dựa vào UserId
+    SELECT Fullname INTO v_Fullname
+    FROM users WHERE UserId = NEW.UserId;
+    SELECT Avatar INTO v_Avatar
+    FROM users WHERE UserId = NEW.UserId;
+
+    -- Cập nhật thông tin vào bảng productcomment
+    UPDATE productcomments
+    SET Fullname = v_Fullname,
+        Avatar = v_Avatar
+    WHERE UserId = NEW.UserId AND Id = NEW.Id;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `UpdateProductRank` AFTER INSERT ON `productcomments` FOR EACH ROW BEGIN
+    DECLARE product_id INT;
+    DECLARE total_rank INT; -- Sử dụng kiểu dữ liệu INT thay vì FLOAT
+    DECLARE comment_count INT;
+
+    SET product_id = NEW.ProductId;
+    
+    -- Tính tổng rank và số lượng bình luận có rank cho sản phẩm
+    SELECT ROUND(SUM(Rank)) INTO total_rank
+    FROM productcomments
+    WHERE ProductId = product_id AND Rank IS NOT NULL;
+    
+	SELECT COUNT(*) INTO comment_count
+    FROM productcomments
+    WHERE ProductId = product_id AND Rank IS NOT NULL;
+    -- Cập nhật rank của sản phẩm trong bảng products
+    IF comment_count > 0 THEN
+        UPDATE products
+        SET Rank = ROUND(total_rank / comment_count)
+        WHERE id = product_id;
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `productimages`
+-- Table structure for table `productimages`
 --
 
 CREATE TABLE `productimages` (
@@ -171,7 +270,7 @@ CREATE TABLE `productimages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Đang đổ dữ liệu cho bảng `productimages`
+-- Dumping data for table `productimages`
 --
 
 INSERT INTO `productimages` (`Id`, `ProductId`, `Value`) VALUES
@@ -214,7 +313,7 @@ INSERT INTO `productimages` (`Id`, `ProductId`, `Value`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `productlabels`
+-- Table structure for table `productlabels`
 --
 
 CREATE TABLE `productlabels` (
@@ -224,7 +323,7 @@ CREATE TABLE `productlabels` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Đang đổ dữ liệu cho bảng `productlabels`
+-- Dumping data for table `productlabels`
 --
 
 INSERT INTO `productlabels` (`Id`, `ProductId`, `Type`) VALUES
@@ -234,7 +333,7 @@ INSERT INTO `productlabels` (`Id`, `ProductId`, `Type`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `products`
+-- Table structure for table `products`
 --
 
 CREATE TABLE `products` (
@@ -248,50 +347,50 @@ CREATE TABLE `products` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Đang đổ dữ liệu cho bảng `products`
+-- Dumping data for table `products`
 --
 
 INSERT INTO `products` (`Id`, `CategoryId`, `Name`, `Description`, `Price`, `Discount`, `Rank`) VALUES
-(1, 3, 'Iphone 14', 'best', 30000000, 29000000, NULL),
-(2, 3, 'Iphone 12', '', 13000000, 12900000, NULL),
-(3, 3, 'Iphone 13 Pro', '', 21000000, 1999000, NULL),
-(4, 3, 'iPhone 12 Pro', '', 12000000, 10990000, '4.8'),
-(5, 3, 'iPhone 12 Pro Max', '', 1500000, 14000000, '4.7'),
-(6, 3, 'iPhone SE (2022)', '', 10000000, 990000, '4.5'),
-(7, 3, 'iPhone 13', '', 22000000, 20000000, '4.7'),
-(8, 3, 'iPhone 13 mini', '', 20000000, 18000000, '4.6'),
-(9, 3, 'iPhone 13 Pro Max', '', 22000000, 20000000, '4.9'),
-(10, 3, 'iPhone 14 Pro', '', 31000000, 30000000, '4.9'),
-(11, 15, 'Samsung Galaxy Z Fold5 12GB 512GB', '', 39900000, 39000000, '4.9'),
-(12, 15, 'Samsung Galaxy Z Flip5 512GB', '', 29000000, 28500000, '4.8'),
-(13, 15, 'Samsung Galaxy S20 FE 256GB', '', 29900000, 29000000, '4.9'),
-(14, 15, 'Samsung Galaxy Z Flip4 128GB', '', 19000000, 18500000, '4.8'),
-(15, 16, 'OPPO Find N2 Flip', '', 29000000, 28000000, '4.9'),
-(16, 16, 'OPPO A78 4G (8GB 256GB)', '', 10000000, 990000, '4.8'),
-(17, 16, 'OPPO Find N2 Flip', '', 9000000, 8500000, '4.8'),
-(18, 6, 'Apple Macbook Pro 13 M2 2022 8GB 256GB', '', 29000000, 28990000, '4.9'),
-(19, 6, 'Apple Macbook Air M2 2022 8GB 256GB', '', 48000000, 47000000, '5.0'),
-(20, 6, 'MacBook Pro 14 inch M2 Pro 2023 ', '', 31000000, 3990000, '4.9'),
-(21, 6, 'Apple MacBook Pro 13 Touch Bar M1 256GB 2020', '', 28000000, 27000000, '4.9'),
-(22, 7, 'Laptop Dell Inspiron 16 5620 N6I7110W1', '', 29000000, 28990000, '4.9'),
-(23, 7, 'Laptop Dell Inspirion 15 3511 PDP3H', '', 48000000, 47000000, '5.0'),
-(24, 7, 'Laptop Dell Vostro 3520', '', 29000000, 28990000, '4.9'),
-(25, 7, 'Laptop Dell Latidude 7320 9PPWV', '', 41000000, 40000000, '5.0'),
-(26, 7, 'Laptop Dell Inspiron 3511 5829BLK', '', 29000000, 28990000, '4.9'),
-(27, 8, 'Laptop HP Pavilion x360 14 EK0056TU 6L294PA', '', 29000000, 28990000, '4.9'),
-(28, 8, 'Laptop HP Gaming Victus 15-FA0115TX 7C0X1PA', '', 28000000, 27000000, '5.0'),
-(29, 8, 'Laptop HP Pavilion 15-EG2037TX 6K783PA', '', 29000000, 28990000, '4.9'),
-(30, 8, 'Laptop HP Gaming Victus 15-FA0031DX 6503849', '', 28000000, 27000000, '5.0'),
-(31, 9, 'Laptop Asus TUF GAMING F15 FX506HF-HN014W', '', 29000000, 28990000, '4.9'),
-(32, 8, 'Laptop ASUS X515MA-BR481W', '', 28000000, 27000000, '5.0'),
-(33, 8, 'Laptop ASUS Gaming TUF FX506LHB-HN188W', '', 29000000, 28990000, '4.9'),
-(34, 8, 'Laptop ASUS Gaming ROG Zephyrus G14 GA401QC-K2199W', '', 28000000, 27000000, '5.0'),
-(35, 8, 'Laptop Asus Gaming Rog Strix G15 G513IH HN015W', '', 28000000, 27000000, '5.0');
+(1, 3, 'Iphone 14', 'best', 30000000, 29000000, '4'),
+(2, 3, 'Iphone 12', '', 13000000, 12900000, '4'),
+(3, 3, 'Iphone 13 Pro', '', 21000000, 1999000, '4'),
+(4, 3, 'iPhone 12 Pro', '', 12000000, 10990000, '4'),
+(5, 3, 'iPhone 12 Pro Max', '', 1500000, 14000000, '4'),
+(6, 3, 'iPhone SE (2022)', '', 10000000, 990000, '4'),
+(7, 3, 'iPhone 13', '', 22000000, 20000000, '5'),
+(8, 3, 'iPhone 13 mini', '', 20000000, 18000000, '4'),
+(9, 3, 'iPhone 13 Pro Max', '', 22000000, 20000000, '4'),
+(10, 3, 'iPhone 14 Pro', '', 31000000, 30000000, '4'),
+(11, 15, 'Samsung Galaxy Z Fold5 12GB 512GB', '', 39900000, 39000000, '4'),
+(12, 15, 'Samsung Galaxy Z Flip5 512GB', '', 29000000, 28500000, '4'),
+(13, 15, 'Samsung Galaxy S20 FE 256GB', '', 29900000, 29000000, '4'),
+(14, 15, 'Samsung Galaxy Z Flip4 128GB', '', 19000000, 18500000, '4'),
+(15, 16, 'OPPO Find N2 Flip', '', 29000000, 28000000, '4'),
+(16, 16, 'OPPO A78 4G (8GB 256GB)', '', 10000000, 990000, '4'),
+(17, 16, 'OPPO Find N2 Flip', '', 9000000, 8500000, '4'),
+(18, 6, 'Apple Macbook Pro 13 M2 2022 8GB 256GB', '', 29000000, 28990000, '4'),
+(19, 6, 'Apple Macbook Air M2 2022 8GB 256GB', '', 48000000, 47000000, '4'),
+(20, 6, 'MacBook Pro 14 inch M2 Pro 2023 ', '', 31000000, 3990000, '4'),
+(21, 6, 'Apple MacBook Pro 13 Touch Bar M1 256GB 2020', '', 28000000, 27000000, '4'),
+(22, 7, 'Laptop Dell Inspiron 16 5620 N6I7110W1', '', 29000000, 28990000, '4'),
+(23, 7, 'Laptop Dell Inspirion 15 3511 PDP3H', '', 48000000, 47000000, '4'),
+(24, 7, 'Laptop Dell Vostro 3520', '', 29000000, 28990000, '4'),
+(25, 7, 'Laptop Dell Latidude 7320 9PPWV', '', 41000000, 40000000, '4'),
+(26, 7, 'Laptop Dell Inspiron 3511 5829BLK', '', 29000000, 28990000, '4'),
+(27, 8, 'Laptop HP Pavilion x360 14 EK0056TU 6L294PA', '', 29000000, 28990000, '4'),
+(28, 8, 'Laptop HP Gaming Victus 15-FA0115TX 7C0X1PA', '', 28000000, 27000000, '4'),
+(29, 8, 'Laptop HP Pavilion 15-EG2037TX 6K783PA', '', 29000000, 28990000, '4'),
+(30, 8, 'Laptop HP Gaming Victus 15-FA0031DX 6503849', '', 28000000, 27000000, '4'),
+(31, 9, 'Laptop Asus TUF GAMING F15 FX506HF-HN014W', '', 29000000, 28990000, '4'),
+(32, 8, 'Laptop ASUS X515MA-BR481W', '', 28000000, 27000000, '4'),
+(33, 8, 'Laptop ASUS Gaming TUF FX506LHB-HN188W', '', 29000000, 28990000, '4'),
+(34, 8, 'Laptop ASUS Gaming ROG Zephyrus G14 GA401QC-K2199W', '', 28000000, 27000000, '4'),
+(35, 8, 'Laptop Asus Gaming Rog Strix G15 G513IH HN015W', '', 28000000, 27000000, '4');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `roles`
+-- Table structure for table `roles`
 --
 
 CREATE TABLE `roles` (
@@ -301,7 +400,7 @@ CREATE TABLE `roles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Đang đổ dữ liệu cho bảng `roles`
+-- Dumping data for table `roles`
 --
 
 INSERT INTO `roles` (`Id`, `Name`, `NormalizedName`) VALUES
@@ -312,7 +411,7 @@ INSERT INTO `roles` (`Id`, `Name`, `NormalizedName`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `specificationproducts`
+-- Table structure for table `specificationproducts`
 --
 
 CREATE TABLE `specificationproducts` (
@@ -323,7 +422,7 @@ CREATE TABLE `specificationproducts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Đang đổ dữ liệu cho bảng `specificationproducts`
+-- Dumping data for table `specificationproducts`
 --
 
 INSERT INTO `specificationproducts` (`Id`, `ProductId`, `SpecificationId`, `Value`) VALUES
@@ -350,7 +449,7 @@ INSERT INTO `specificationproducts` (`Id`, `ProductId`, `SpecificationId`, `Valu
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `specifications`
+-- Table structure for table `specifications`
 --
 
 CREATE TABLE `specifications` (
@@ -359,7 +458,7 @@ CREATE TABLE `specifications` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Đang đổ dữ liệu cho bảng `specifications`
+-- Dumping data for table `specifications`
 --
 
 INSERT INTO `specifications` (`Id`, `Title`) VALUES
@@ -383,7 +482,7 @@ INSERT INTO `specifications` (`Id`, `Title`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `userroles`
+-- Table structure for table `userroles`
 --
 
 CREATE TABLE `userroles` (
@@ -393,7 +492,7 @@ CREATE TABLE `userroles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Đang đổ dữ liệu cho bảng `userroles`
+-- Dumping data for table `userroles`
 --
 
 INSERT INTO `userroles` (`Id`, `UserId`, `RoleId`) VALUES
@@ -426,7 +525,7 @@ INSERT INTO `userroles` (`Id`, `UserId`, `RoleId`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -447,7 +546,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Đang đổ dữ liệu cho bảng `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`Id`, `Username`, `Password`, `Fullname`, `Email`, `PhoneNumber`, `Address`, `Avatar`, `Cover`, `Bio`, `Gender`, `DOB`, `CreatedDate`, `LastModifiedDate`) VALUES
@@ -476,7 +575,7 @@ INSERT INTO `users` (`Id`, `Username`, `Password`, `Fullname`, `Email`, `PhoneNu
 (24, 'Lê Thị Thu', 'thule20', 'Lê Thị Thu', 'lethithu@gmail.com', 444444444, 'Phú Yên', 'https://static.vecteezy.com/system/resources/previews/009/734/564/original/default-avatar-profile-icon-of-social-media-user-vector.jpg', 'https://atiinc.org/wp-content/uploads/2017/01/cover-default.jpg', '', 0, '1999-02-27', '2023-08-14 22:00:00', '2023-08-13 05:00:00');
 
 --
--- Bẫy `users`
+-- Triggers `users`
 --
 DELIMITER $$
 CREATE TRIGGER `AddUserRole` AFTER INSERT ON `users` FOR EACH ROW BEGIN
@@ -485,13 +584,23 @@ CREATE TRIGGER `AddUserRole` AFTER INSERT ON `users` FOR EACH ROW BEGIN
 END
 $$
 DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `UpdateAvatarAndFullnameComment` AFTER UPDATE ON `users` FOR EACH ROW BEGIN
+    -- Cập nhật thông tin họ tên và hình đại diện vào bảng productcomments
+    UPDATE productcomments
+    SET Fullname = NEW.Fullname,
+        Avatar = NEW.Avatar
+    WHERE UserId = NEW.Id;
+END
+$$
+DELIMITER ;
 
 --
--- Chỉ mục cho các bảng đã đổ
+-- Indexes for dumped tables
 --
 
 --
--- Chỉ mục cho bảng `carts`
+-- Indexes for table `carts`
 --
 ALTER TABLE `carts`
   ADD PRIMARY KEY (`Id`),
@@ -499,14 +608,14 @@ ALTER TABLE `carts`
   ADD KEY `UserId` (`UserId`);
 
 --
--- Chỉ mục cho bảng `categories`
+-- Indexes for table `categories`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`Id`),
   ADD KEY `ParentCategoryId` (`ParentCategoryId`);
 
 --
--- Chỉ mục cho bảng `orderproducts`
+-- Indexes for table `orderproducts`
 --
 ALTER TABLE `orderproducts`
   ADD PRIMARY KEY (`Id`),
@@ -514,14 +623,14 @@ ALTER TABLE `orderproducts`
   ADD KEY `OrderId` (`OrderId`);
 
 --
--- Chỉ mục cho bảng `orders`
+-- Indexes for table `orders`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`Id`),
   ADD KEY `UserId` (`UserId`);
 
 --
--- Chỉ mục cho bảng `productcomments`
+-- Indexes for table `productcomments`
 --
 ALTER TABLE `productcomments`
   ADD PRIMARY KEY (`Id`),
@@ -529,34 +638,34 @@ ALTER TABLE `productcomments`
   ADD KEY `UserId` (`UserId`);
 
 --
--- Chỉ mục cho bảng `productimages`
+-- Indexes for table `productimages`
 --
 ALTER TABLE `productimages`
   ADD PRIMARY KEY (`Id`),
   ADD KEY `ProductId` (`ProductId`);
 
 --
--- Chỉ mục cho bảng `productlabels`
+-- Indexes for table `productlabels`
 --
 ALTER TABLE `productlabels`
   ADD PRIMARY KEY (`Id`),
   ADD KEY `ProductId` (`ProductId`);
 
 --
--- Chỉ mục cho bảng `products`
+-- Indexes for table `products`
 --
 ALTER TABLE `products`
   ADD PRIMARY KEY (`Id`),
   ADD KEY `CategoryId` (`CategoryId`);
 
 --
--- Chỉ mục cho bảng `roles`
+-- Indexes for table `roles`
 --
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`Id`);
 
 --
--- Chỉ mục cho bảng `specificationproducts`
+-- Indexes for table `specificationproducts`
 --
 ALTER TABLE `specificationproducts`
   ADD PRIMARY KEY (`Id`),
@@ -564,13 +673,13 @@ ALTER TABLE `specificationproducts`
   ADD KEY `SpecificationId` (`SpecificationId`);
 
 --
--- Chỉ mục cho bảng `specifications`
+-- Indexes for table `specifications`
 --
 ALTER TABLE `specifications`
   ADD PRIMARY KEY (`Id`);
 
 --
--- Chỉ mục cho bảng `userroles`
+-- Indexes for table `userroles`
 --
 ALTER TABLE `userroles`
   ADD PRIMARY KEY (`Id`),
@@ -578,157 +687,157 @@ ALTER TABLE `userroles`
   ADD KEY `UserId` (`UserId`) USING BTREE;
 
 --
--- Chỉ mục cho bảng `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`Id`);
 
 --
--- AUTO_INCREMENT cho các bảng đã đổ
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT cho bảng `carts`
+-- AUTO_INCREMENT for table `carts`
 --
 ALTER TABLE `carts`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT cho bảng `categories`
+-- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
--- AUTO_INCREMENT cho bảng `orderproducts`
+-- AUTO_INCREMENT for table `orderproducts`
 --
 ALTER TABLE `orderproducts`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT cho bảng `orders`
+-- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT cho bảng `productcomments`
+-- AUTO_INCREMENT for table `productcomments`
 --
 ALTER TABLE `productcomments`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT cho bảng `productimages`
+-- AUTO_INCREMENT for table `productimages`
 --
 ALTER TABLE `productimages`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
--- AUTO_INCREMENT cho bảng `productlabels`
+-- AUTO_INCREMENT for table `productlabels`
 --
 ALTER TABLE `productlabels`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT cho bảng `products`
+-- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
--- AUTO_INCREMENT cho bảng `roles`
+-- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT cho bảng `specificationproducts`
+-- AUTO_INCREMENT for table `specificationproducts`
 --
 ALTER TABLE `specificationproducts`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
--- AUTO_INCREMENT cho bảng `specifications`
+-- AUTO_INCREMENT for table `specifications`
 --
 ALTER TABLE `specifications`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
--- AUTO_INCREMENT cho bảng `userroles`
+-- AUTO_INCREMENT for table `userroles`
 --
 ALTER TABLE `userroles`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
--- AUTO_INCREMENT cho bảng `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
--- Các ràng buộc cho các bảng đã đổ
+-- Constraints for dumped tables
 --
 
 --
--- Các ràng buộc cho bảng `carts`
+-- Constraints for table `carts`
 --
 ALTER TABLE `carts`
   ADD CONSTRAINT `carts_ibfk_1` FOREIGN KEY (`ProductId`) REFERENCES `products` (`Id`),
   ADD CONSTRAINT `carts_ibfk_2` FOREIGN KEY (`UserId`) REFERENCES `users` (`Id`);
 
 --
--- Các ràng buộc cho bảng `categories`
+-- Constraints for table `categories`
 --
 ALTER TABLE `categories`
   ADD CONSTRAINT `categories_ibfk_1` FOREIGN KEY (`ParentCategoryId`) REFERENCES `categories` (`Id`);
 
 --
--- Các ràng buộc cho bảng `orderproducts`
+-- Constraints for table `orderproducts`
 --
 ALTER TABLE `orderproducts`
   ADD CONSTRAINT `orderproducts_ibfk_1` FOREIGN KEY (`ProductId`) REFERENCES `products` (`Id`),
   ADD CONSTRAINT `orderproducts_ibfk_2` FOREIGN KEY (`OrderId`) REFERENCES `orders` (`Id`);
 
 --
--- Các ràng buộc cho bảng `orders`
+-- Constraints for table `orders`
 --
 ALTER TABLE `orders`
   ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`UserId`) REFERENCES `users` (`Id`);
 
 --
--- Các ràng buộc cho bảng `productcomments`
+-- Constraints for table `productcomments`
 --
 ALTER TABLE `productcomments`
   ADD CONSTRAINT `productcomments_ibfk_1` FOREIGN KEY (`ProductId`) REFERENCES `products` (`Id`),
   ADD CONSTRAINT `productcomments_ibfk_2` FOREIGN KEY (`UserId`) REFERENCES `users` (`Id`);
 
 --
--- Các ràng buộc cho bảng `productimages`
+-- Constraints for table `productimages`
 --
 ALTER TABLE `productimages`
   ADD CONSTRAINT `productimages_ibfk_1` FOREIGN KEY (`ProductId`) REFERENCES `products` (`Id`);
 
 --
--- Các ràng buộc cho bảng `productlabels`
+-- Constraints for table `productlabels`
 --
 ALTER TABLE `productlabels`
   ADD CONSTRAINT `productlabels_ibfk_1` FOREIGN KEY (`ProductId`) REFERENCES `products` (`Id`);
 
 --
--- Các ràng buộc cho bảng `products`
+-- Constraints for table `products`
 --
 ALTER TABLE `products`
   ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`CategoryId`) REFERENCES `categories` (`Id`);
 
 --
--- Các ràng buộc cho bảng `specificationproducts`
+-- Constraints for table `specificationproducts`
 --
 ALTER TABLE `specificationproducts`
   ADD CONSTRAINT `specificationproducts_ibfk_1` FOREIGN KEY (`ProductId`) REFERENCES `products` (`Id`),
   ADD CONSTRAINT `specificationproducts_ibfk_2` FOREIGN KEY (`SpecificationId`) REFERENCES `specifications` (`Id`);
 
 --
--- Các ràng buộc cho bảng `userroles`
+-- Constraints for table `userroles`
 --
 ALTER TABLE `userroles`
   ADD CONSTRAINT `userroles_ibfk_1` FOREIGN KEY (`UserId`) REFERENCES `users` (`Id`),
