@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title><?php echo (!empty($page_title))?$page_title:'Trang chủ website'; ?></title>
+    <title><?php echo (!empty($page_title))?$page_title:'Ecommerce'; ?></title>
     <meta charset="utf-8"/>
     <link type="text/css" rel="stylesheet" href="<?php echo _WEB_ROOT; ?>/end_user/assets/css/style.css"/>
     <link href="<?php echo _WEB_ROOT; ?>/end_user/assets/css/bootstrap.min.css" rel="stylesheet" />
@@ -10,7 +10,6 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Mobile retail</title>
     <meta name="keywords" content="HTML5 Template">
     <meta name="description" content="Molla - Bootstrap eCommerce Template">
     <meta name="author" content="p-themes">
@@ -36,6 +35,7 @@
 </head>
 <body>
 
+
     <?php
     $this->render('blocks/header', $sub_content);
     $this->render($content, $sub_content);
@@ -43,7 +43,8 @@
     ?>
 
 
-    <script type="text/javascript" src="<?php echo _WEB_ROOT; ?>/end_user/assets/main.js"></script>
+    <script src="<?php echo _WEB_ROOT; ?>/end_user/assets/main.js"></script>
+    <script src="<?php echo _WEB_ROOT; ?>/end_user/assets/js/main.js"></script>
     <script src="<?php echo _WEB_ROOT; ?>/end_user/assets/js/jquery.min.js"></script>
     <script src="<?php echo _WEB_ROOT; ?>/end_user/assets/js/bootstrap.bundle.min.js"></script>
     <script src="<?php echo _WEB_ROOT; ?>/end_user/assets/js/jquery.hoverIntent.min.js"></script>

@@ -1,4 +1,4 @@
-<header class="header">
+<header class="header" >
     <div class="header-middle sticky-header">
         <div class="container">
             <div class="header-left">
@@ -11,7 +11,7 @@
                     <img src="<?php echo _WEB_ROOT; ?>/end_user/assets/images/logo.png" alt="Molla Logo" width="105" height="25">
                 </a>
 
-                <nav class="main-nav">
+                <nav class="main-nav" style = "width:1100px">
                     <ul class="menu sf-arrows">
                         <li class="megamenu-container active"><a href="?" class="">Home</a></li>
                         <li><a href="?mod=page&act=detail&id=1" class="">About</a>
