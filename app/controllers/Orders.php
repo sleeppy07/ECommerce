@@ -11,6 +11,7 @@ class Orders extends Controller {
 
     public function CreateOrder($UserId, $Fullname, $Address, $PhoneNumber, $ShippingFee)
     {
+        
         $request = $this->orderModel->CreateOrder($UserId, $Fullname, $Address, $PhoneNumber, $ShippingFee);
         $this->data['sub_content']['create_products'] = $request;
         //$this->data['content'] = 'products/list';

@@ -40,14 +40,13 @@ class Categories extends Controller{
     
     public function ListCategory()
     {
-        $CategoryId = $_POST['categoryId'];
-        $Node = $_POST['node'];
-        $request = $this->categoryModel->ListCategory($CategoryId, $Node);
+        $request = $this->categoryModel->ListCategory(null, 1);
+        //var_dump($request);
         $this->data['sub_content']['list_categories'] = $request;
-        //$this->data['content'] = 'products/list';
+        //$this->data['content'] = 'users/list';
 
         //Render view
-        $this->render('layouts/client_layout', $this->data);
+        //$this->render('blocks/header', $this->data);
     }
 
     public function DetailCategory($CategoryId)
@@ -57,7 +56,7 @@ class Categories extends Controller{
         //$this->data['content'] = 'products/list';
 
         //Render view
-        $this->render('layouts/client_layout', $this->data);
+        $this->render('blocks/header', $this->data);
     }
 
 }
