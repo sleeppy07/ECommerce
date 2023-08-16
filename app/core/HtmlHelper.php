@@ -14,7 +14,7 @@ class HtmlHelper{
        echo $wrapAfter;
     }
 
-    static function submit($label, $class=''){
-        echo '<button type="submit" class="'.$class.'">'.$label.'</button>';
+    static function submit($label, $class='', $style=''){
+        echo '<button type="submit" style="'.$style.'" class="'.$class.'">'.$label.'</button>';
     }
 }

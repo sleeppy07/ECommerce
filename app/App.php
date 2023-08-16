@@ -4,7 +4,7 @@ class App{
     private $__controller, $__action, $__params, $__routes, $__db;
 
     static public $app;
-
+    
     function __construct(){
 
         global $routes, $config;

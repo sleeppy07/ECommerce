@@ -20,19 +20,18 @@
                             </ul>
                             <div class="tab-content" id="tab-content-5">
                                 <div class="tab-pane fade show active" id="signin" role="tabpanel" aria-labelledby="signin-tab">
-                                
-                                    <form action="" method="post">
-                                        <div class="messager-error"><?php if(isset($error['login'])) echo $error['login']  ?> </div>
+                                    <form action="<?php echo _WEB_ROOT; ?>/Home/Login" method="post">
+                                        <div class="messager-error"><?php echo (!empty($msg))?$msg:false;  ?> </div>
                                         <div class="form-group">
                                             <label for="singin-email">Username *</label>
                                             <input type="text" class="form-control" id="singin-email" name="username" >
-                                            <div class="messager-error" ><?php if(isset($error['username'])) echo $error['username']  ?> </div>
+                                            <div class="messager-error" ><?php echo (!empty($msg))?$msg:false; ?> </div>
                                         </div><!-- End .form-group -->
 
                                         <div class="form-group">
                                             <label for="singin-password">Password *</label>
                                             <input type="password" class="form-control" id="singin-password" name="password" >
-                                            <div class="messager-error" > <?php if(isset($error['password'])) echo $error['password']  ?></div>
+                                            <div class="messager-error" > <?php echo (!empty($msg))?$msg:false; ?></div>
                                         </div><!-- End .form-group -->
 
                                         <div class="form-footer">
@@ -97,4 +96,4 @@
         <!--</div> End .modal-dialog 
     </div>End .modal -->
 </body>
-</html>
+?>
