@@ -21,9 +21,7 @@ class UserModel extends Model {
      {
         $tableName = $this->tableFill();
         $check = $this->db->table($tableName)
-                            ->orWhere('Username', '=', $Login)
-                            ->orWhere('Email', '=', $Login)
-                            ->orWhere('PhoneNumber', '=', $Login)
+                            ->where('Username', '=', $Login)
                             ->where('Password', '=', $Password)->first();
         if($check) return $check;
         return null;

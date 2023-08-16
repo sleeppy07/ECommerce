@@ -53,4 +53,34 @@
     <script src="<?php echo _WEB_ROOT; ?>/end_user/assets/js/owl.carousel.min.js"></script>
     <script src="<?php echo _WEB_ROOT; ?>/end_user/assets/js/jquery.magnific-popup.min.js"></script>
 </body>
+
+
+<?php
+    $error=array();
+    if(isset($_POST['btn-login'])){
+    
+        //Xử lý để trống usename
+        if(empty($_POST['username'])){
+            $error['username']='Please enter the username';
+        } else{
+             $username= $_POST['username'];
+        }
+        //Xử lý để trống
+        if(empty($_POST['password'])){
+            $error['password']='Please enter the password';
+        } else{
+            $password=$_POST['password'];
+        }
+    
+        if(empty($error)){
+            if(check_login($username,$password)){
+                $_SESSION['is_login']=true;
+                $_SESSION['user_login']=$username;
+                redirect('?');
+            } else {
+                $error['login']='Username or password incorrect';
+            } 
+    
+    }}
+?>
 </html>
