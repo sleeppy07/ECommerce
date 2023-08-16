@@ -4,7 +4,7 @@ $config['app'] = [
         HtmlHelper::class
     ],
     'routeMiddleware' => [
-        'san-pham' => AuthMiddleware::class
+        'Identity' => AuthMiddleware::class
     ],
     'globalMiddleware' => [
         ParamsMiddleware::class
