@@ -38,8 +38,10 @@ class Categories extends Controller{
         $this->render('layouts/client_layout', $this->data);
     }
     
-    public function ListCategory($CategoryId, $Node)
+    public function ListCategory()
     {
+        $CategoryId = $_POST['categoryId'];
+        $Node = $_POST['node'];
         $request = $this->categoryModel->ListCategory($CategoryId, $Node);
         $this->data['sub_content']['list_categories'] = $request;
         //$this->data['content'] = 'products/list';

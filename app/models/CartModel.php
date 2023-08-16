@@ -60,7 +60,7 @@ class CartModel extends Model{
     $this->db->table($tableName)->where('ProductId' , '=' , $ProductId)->update($data);
     return $check;
  }
- public function ListCart($Page, $PageSize, $UserId)
+ public function ListCart($UserId)
  {
     $tableProductImage = 'productimages';
     $tableProduct = 'products';
@@ -72,8 +72,6 @@ class CartModel extends Model{
                         ->join($tableProduct, $relationshipCartAndProduct)
                         ->join($tableProductImage, $relationProductImageAndProduct)->Where($tableCart.'.UserId', ' = ', $UserId)
                         ->groupBy($tableProduct.'.Id, '.$tableProduct.'.Name, '.$tableProduct.'.Price, '.$tableProduct.'.Discount');
-                      
-        $data = $data->limit($Page, $PageSize);
         return $data->get();
      }
 

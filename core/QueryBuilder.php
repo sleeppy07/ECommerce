@@ -58,8 +58,14 @@ trait QueryBuilder{
     }
   
 
-    public function limit($offset, $number){
-        $this->limit = " LIMIT $offset , $number ";
+    public function limit($offset, $number = ''){
+        if (!empty($number))
+        {
+            $this->limit = " LIMIT $offset , $number ";
+
+        }
+        else { $this->limit = " LIMIT $offset ";
+        }
         return $this;
     }
 

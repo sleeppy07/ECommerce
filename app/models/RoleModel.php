@@ -22,10 +22,10 @@ class RoleModel extends Model {
      }
 
      //UserRoles
-     public function CheckUserRole($UserId, $RoleId)
+     public function CheckUserRole($UserId)
      {
-        $data = $this->db->table('userroles')->where('UserId' , ' = ', $UserId)->where('RoleId' , ' = ', $RoleId)->first();
-        if($data) return true;
+        $data = $this->db->table('userroles')->where('UserId' , ' = ', $UserId)->orderBy('RoleId', 'DESC')->limit(1)->first();
+        if($data) return $data;
         else return false;
      }
 

@@ -7,7 +7,7 @@ class Home extends Controller{
         $this->province = $this->model('HomeModel');
     }
 
-
+    
     
 
 
