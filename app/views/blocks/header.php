@@ -10,16 +10,13 @@
                 <a href="" class="logo">
                     <img src="<?php echo _WEB_ROOT; ?>/end_user/assets/images/logo.png" alt="Molla Logo" width="105" height="25">
                 </a>
-
                 <nav class="main-nav" style = "width:1100px">
                     <ul class="menu sf-arrows">
-                        <li class="megamenu-container active"><a href="?" class="">Home</a></li>
-                        <li><a href="?mod=page&act=detail&id=1" class="">About</a>
-                        <li><a href="?mod=product&act=main&cat_id=1" class="">Laptop</a>
-                        <li><a href="?mod=product&act=main&cat_id=2" class="">Macbook</a>
-                        <li><a href="?mod=product&act=main&cat_id=3" class="">Mobile</a>
-                        <li><a href="?mod=page&act=detail&id=2" class="">Contact</a>
+                    <?php var_dump(_WEB_ROOT.'/Categories/ListCategory')?>
+                    @foreach(_WEB_ROOT.'/Categories/ListCategory' as $item) 
+                        <li><a href="?mod=product&act=main&cat_id={{$item['Id']}}" class="">{{$item['Name']}}</a>
                         </li>
+                        @endforeach
                     </ul><!-- End .menu -->
                 </nav><!-- End .main-nav -->
             </div><!-- End .header-left -->

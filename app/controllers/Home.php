@@ -5,16 +5,28 @@ class Home extends Controller{
     public $userModel;
     public $roleModel;
     public $cartModel;
+    public $productModel;
     public function __construct(){
         $this->province = $this->model('HomeModel');
         $this->userModel = $this->model('UserModel');
         $this->roleModel = $this->model('RoleModel');
         $this->cartModel = $this->model('CartModel');
+        $this->productModel = $this->model('ProductModel');
+    }
+
+    public function ListProduct($CategoryId = '', $Name = '', $Page = '', $PageSize='')
+    {
+        
+        $request = $this->productModel->ListProduct($CategoryId, $Name, $Page, $PageSize);
+        $this->data['sub_content']['list_products'] = $request;
+        $this->data['content'] = 'home/main';
+
+        //Render view
+        $this->render('layouts/client_layout', $this->data);
     }
 
     public function Register($Username, $Email, $PhoneNumber, $Password, $Gender, $DOB)
     {
-        Session::data('Enviroment', 'EndUser');
         $this->data['sub_content']['new_title'] = 'Register';
         if($_SERVER['REQUEST_METHOD']=='POST') {
             if($_POST['Register']){
@@ -68,6 +80,7 @@ class Home extends Controller{
                 if($user)
                 {
                     $userRole = $this->roleModel->CheckUserRole($user["Id"]);
+                    Session::data('Enviroment', 'EndUser');
                     Session::data('UserId', $userRole["UserId"]); 
                     Session::data('RoleId', $userRole["RoleId"]);
                     Session::data('UserCart', 0);
@@ -91,7 +104,6 @@ class Home extends Controller{
 
     public function Login()
     {
-        Session::data('Enviroment', 'EndUser');
         $this->data['sub_content']['new_title'] = 'Login';
         if($_SERVER['REQUEST_METHOD']=='POST') {
             $Username = $_POST['username'];
@@ -130,11 +142,12 @@ class Home extends Controller{
                         $cartItems = $cartItems +  $cart->Quantity;
                     }
                 }
+                Session::data('Enviroment', 'EndUser');
                 Session::data('UserId', $userRole["UserId"]); 
                 Session::data('RoleId', $userRole["RoleId"]);
                 Session::data('UserCart', $cartItems);
-                $response = new Response();
-                $response->redirect('users/profile');
+                // $response = new Response();
+                // $response->redirect('Home/main');
             } else {
                 $this->data['content'] = 'users/Login';
                 $this->render('layouts/client_layout', $this->data);

@@ -8,18 +8,35 @@ class Users extends Controller{
         $this->userModel = $this->model('UserModel');
     }
     
-    public function UserList($username = null, $email = null, $phoneNumber = null, $startDate = null, $endDate = null, $page = 0, $pageSize = 3){
+    public function UserList($username = null, $email = null, $phoneNumber = null, $startDate = null, $endDate = null, $page = null, $pageSize = null){
+        If(Session::data("Enviroment") == "Admin")
+        {
+            if($_SERVER['REQUEST_METHOD']=='POST')
+            {
+                $username = $_POST['username']; 
+                $email = $_POST['email'];  
+                $phoneNumber = $_POST['phoneNumber'];  
+                $startDate = $_POST['startDate']; 
+                $endDate = $_POST['endDate'];  
+                $page = $_POST['page'];  
+                $pageSize = $_POST['pageSize']; 
 
-        $request = $this->userModel->UserList($username, $email, $phoneNumber, $startDate, $endDate, $page, $pageSize);
-        //$this->data['sub_content']['new_title'] = 'Tin tức 1';
-        $this->data['sub_content']['list_users'] = $request;
-        //$this->data['content'] = 'users/list'; //render view
+                $request = $this->userModel->UserList($username, $email, $phoneNumber, $startDate, $endDate, $page, $pageSize);
+                //$this->data['sub_content']['new_title'] = 'Tin tức 1';
+                $this->data['sub_content']['list_users'] = $request;
+                //$this->data['content'] = 'users/list'; //render view
 
-        $this->render('layouts/client_layout', $this->data);
+                $this->render('layouts/client_layout', $this->data);
+
+            }            
+        }
+
+
     }
 
-    public function UserDetail($Id)
+    public function Profile()
     {   
+        $Id = session::data("UserId");
         $request = $this->userModel->UserDetail($Id);
         $this->data['sub_content']['detail_users'] = $request;
         //$this->data['content'] = 'users/list'; //render view
@@ -27,12 +44,19 @@ class Users extends Controller{
         $this->render('layouts/client_layout', $this->data);
     }
 
-    public function DeleteUser($Id = 3)
+    public function DeleteUser($Id)
     {   
-        $request = $this->userModel->DeleteUser($Id);
-        $this->data['sub_content']['delete_users'] = $request;
-        //$this->data['content'] = 'users/list'; //render view
+        If(Session::data("Enviroment") == "Admin"){
+            if($_SERVER['REQUEST_METHOD']=='POST')
+            {
+                $UserId = $_POST['UserId'];
+                $request = $this->userModel->DeleteUser($UserId);
+                $this->data['sub_content']['delete_users'] = $request;
+                $this->data['content'] = 'users/list'; //render view
 
-        $this->render('users/add', $this->data);
+                $this->render('layouts/client_layout', $this->data);            
+            }
+       }
+
     }
 }
