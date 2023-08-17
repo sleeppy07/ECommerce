@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 16, 2023 at 03:32 PM
+-- Generation Time: Aug 17, 2023 at 06:05 AM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 8.1.10
 
@@ -72,6 +72,32 @@ CREATE TABLE `introduces` (
 INSERT INTO `introduces` (`id`, `title`, `summary`, `avatar`, `content`, `status`, `created_at`, `updated_at`) VALUES
 (4, 'DIGITAL WORLD LÀ GÌ?', 'Công ty TNHH Digital World (Digital World Co. Ltd) thành lập vào tháng 03/2022', '1654956259-introduce-logo-to.png', '<p>C&ocirc;ng ty TNHH Digital World (Digital World Co. Ltd) th&agrave;nh lập v&agrave;o th&aacute;ng 03/2001&nbsp;, lĩnh vực hoạt động ch&iacute;nh của c&ocirc;ng ty bao gồm: mua b&aacute;n sửa chữa c&aacute;c thiết bị li&ecirc;n quan đến điện thoại di động, thiết bị kỹ thuật số v&agrave; c&aacute;c lĩnh vực li&ecirc;n quan đến thương mại điện tử.Bằng trải nghiệm về thị trường điện thoại di động từ đầu những năm 1990, c&ugrave;ng với việc nghi&ecirc;n cứu kỹ tập qu&aacute;n mua h&agrave;ng của kh&aacute;ch h&agrave;ng Việt Nam, Digital World đ&atilde; x&acirc;y dựng một phương thức kinh doanh chưa từng c&oacute; ở Việt Nam trước đ&acirc;y. C&ocirc;ng ty đ&atilde; x&acirc;y dựng được một phong c&aacute;ch tư vấn b&aacute;n h&agrave;ng đặc biệt nhờ v&agrave;o một đội ngũ nh&acirc;n vi&ecirc;n chuy&ecirc;n nghiệp v&agrave; trang web d<a href=\"http://www.thegioididong.com/\">igitalworld</a>.com&nbsp;hỗ trợ như l&agrave; một cẩm nang về điện thoại di động v&agrave; một k&ecirc;nh thương mại điện tử h&agrave;ng đầu tại Việt Nam. Hiện nay, số lượng điện thoại b&aacute;n ra trung b&igrave;nh tại Digital World khoảng 300.000 m&aacute;y/th&aacute;ng chiếm khoảng 15% thị phần điện thoại ch&iacute;nh h&atilde;ng cả nước.</p>\r\n', 1, '2022-06-10 09:28:33', '2022-06-11 21:04:19'),
 (5, 'QUÁ TRÌNH PHÁT TRIỂN', 'Tháng 3/2001: Ra quyết định thành lập công ty. Sau 3 tháng thành lập, công ty ra mắt website www.digitalworld.com và 3 cửa hàng nhỏ tại đường Hoàng Văn Thụ, Lê Lai, CMT8 (Tp.HCM).', '', '<p>Th&aacute;ng 3/2001: Ra quyết định th&agrave;nh lập c&ocirc;ng ty. Sau 3 th&aacute;ng th&agrave;nh lập, c&ocirc;ng ty ra mắt website&nbsp;<a href=\"http://www.thegioimobile.com/\">www.digitalworld.com</a>&nbsp;v&agrave; 3 cửa h&agrave;ng nhỏ tại đường Bắc Từ Li&ecirc;m- H&agrave; Nội.Th&aacute;ng 10/2001, ban gi&aacute;m đốc c&ocirc;ng ty quyết định khai trương si&ecirc;u thị đầu ti&ecirc;n tại 89A, Nguyễn Đ&igrave;nh Chiểu, Tp.HCM với t&ecirc;n gọi ban đầu l&agrave;&nbsp;&nbsp;<a href=\"http://www.thegioimobile.com/\">www.digitalworld.com</a>&nbsp;. Với quy m&ocirc; hơn 200 m2, si&ecirc;u thị được x&acirc;y dựng khang trang n&agrave;y đ&atilde; th&agrave;nh c&ocirc;ng rực rỡ bởi n&oacute; kh&aacute;c biệt ho&agrave;n to&agrave;n với hơn 10.000 cửa h&agrave;ng điện thoại di động nhỏ lẻ l&uacute;c bấy giờ tr&ecirc;n địa b&agrave;n th&agrave;nh phố Hồ Ch&iacute; Minh.Th&aacute;ng 1/2005 si&ecirc;u thị thứ 2 của&nbsp;&nbsp;<a href=\"http://www.thegioimobile.com/\">www.digitalworld.com</a>&nbsp;&nbsp;ra mắt tại số 330 Cộng H&ograve;a (TPHCM).Th&aacute;ng 1/2006, si&ecirc;u thị thứ 3 được khai trương tại 26 Phan Đăng Lưu v&agrave; 2 th&aacute;ng sau lại th&ecirc;m 1 cửa h&agrave;ng nữa ra đời tại 182A, Nguyễn Thị Minh Khai.Giai đoạn 2007 - 2009 l&agrave; giai đoạn thegioididong.com mở rộng ở TPHCM, Đ&agrave; Nẵng v&agrave; H&agrave; Nội.Đến cuối năm 2009, thegioididong.com c&oacute; tổng cộng 38 si&ecirc;u thị với 19 si&ecirc;u thị tại TPCHM, 5 si&ecirc;u thị tại H&agrave; Nội, 2 si&ecirc;u thị tại Đ&agrave; Nẵng v&agrave; 12 si&ecirc;u thị kh&aacute;c tại c&aacute;c tỉnh Đồng Nai, Long An, B&igrave;nh Dương, C&agrave; Mau,&hellip;2007 cũng l&agrave; năm C&ocirc;ng ty TNHH Digital World&nbsp;chuyển đổi sang C&ocirc;ng ty Cổ phần để mở rộng cơ hội ph&aacute;t triển.Từ năm 2010 tới 2011 đ&aacute;nh dấu bước ph&aacute;t triển vượt bậc với sự ra đời li&ecirc;n tiếp của c&aacute;c si&ecirc;u thị Digital World.</p>\r\n\r\n<div class=\"ddict_div\" style=\"top: 42.316px; max-width: 150px; left: 547.267px;\"><img class=\"ddict_audio\" src=\"chrome-extension://bpggmmljdiliancllaapiggllnkbjocb/img/audio.png\" />\r\n<p class=\"ddict_sentence\">www.thegioimobi.com</p>\r\n\r\n<hr />\r\n<p class=\"ddict_didumean\">Did you mean <span class=\"ddict_spell\">www.thegioimobi.cơm</span></p>\r\n</div>\r\n', 0, '2022-06-10 09:31:49', '2022-06-10 16:31:49');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `maps`
+--
+
+CREATE TABLE `maps` (
+  `id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `hotline` varchar(255) NOT NULL,
+  `fax` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `summary` varchar(255) NOT NULL,
+  `map_url` varchar(255) NOT NULL,
+  `status` tinyint(3) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `maps`
+--
+
+INSERT INTO `maps` (`id`, `title`, `hotline`, `fax`, `email`, `summary`, `map_url`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'Đường Nguyên Xá, Bắc Từ Liêm, Hà Nội', '0968696968', '659021', 'digitalworld@gmai.com', 'Đến với chúng tôi để trải nghiệm sản phẩm tốt nhất', 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3723.473685885786!2d105.73331873699033!3d21.053735080594365!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31345457e292d5bf%3A0x20ac91c94d74439a!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBDw7RuZyBuZ2hp4buHc', 1, '2021-12-17 23:35:49', '2022-06-10 16:44:04');
 
 -- --------------------------------------------------------
 
@@ -278,6 +304,12 @@ ALTER TABLE `introduces`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `maps`
+--
+ALTER TABLE `maps`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `news`
 --
 ALTER TABLE `news`
@@ -317,6 +349,16 @@ ALTER TABLE `slides`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `maps`
+--
+ALTER TABLE `maps`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables
